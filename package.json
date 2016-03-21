@@ -1,0 +1,15 @@
+{
+  "name": "fast-safe-stringify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Mark Clements",
+  "license": "MIT",
+  "devDependencies": {
+    "fastbench": "^1.0.1",
+    "json-stringify-safe": "^5.0.1"
+  }
+}
