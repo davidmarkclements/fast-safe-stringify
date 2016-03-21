@@ -1,4 +1,4 @@
-# fast-stringify-safe
+# fast-safe-stringify
 
 Safely and quickly serialize JavaScript objects
 
@@ -23,7 +23,7 @@ functionality with slightly more info. Although not JSON,
 the core `util.inspect` method can be used for similar purposes (e.g. 
 logging) and also handles circular references.
 
-Here we compare fast-safe-stringify with these alternatives:
+Here we compare `fast-safe-stringify` with these alternatives:
 
 ```js
 inspectBench*10000: 163.506ms
@@ -34,7 +34,7 @@ jsonStringifySafeBench*10000: 64.065ms
 fastSafeStringifyBench*10000: 33.956ms
 ```
 
-`fast-stringify-safe` is 2x faster than `json-stringify-safe` and 4x
+`fast-safe-stringify` is 2x faster than `json-stringify-safe` and 4x
 faster than `util.inspect`.
 
 ## Acknowledgements
