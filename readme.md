@@ -14,6 +14,7 @@ o.o = o
 
 console.log(safeStringify(o))
 console.log(JSON.stringify(o)) //<-- throws
+```
 
 ## Benchmarks
 
