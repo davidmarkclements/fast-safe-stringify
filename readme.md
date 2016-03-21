@@ -18,7 +18,7 @@ console.log(JSON.stringify(o)) //<-- throws
 
 ## Benchmarks
 
-The [json-stringify-safe](http://npm.im) module supplies similar 
+The [json-stringify-safe](http://npm.im/json-stringify-safe) module supplies similar 
 functionality with slightly more info. Although not JSON,
 the core `util.inspect` method can be used for similar purposes (e.g. 
 logging) and also handles circular references.
