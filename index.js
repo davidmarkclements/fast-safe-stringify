@@ -1,6 +1,6 @@
 function circular(obj, stack) {
-  if (~stack.indexOf(obj)) { return true }
-  stack.push(obj)
+  if (~stack.indexOf(obj)) return true
+  if (Object(obj) === obj) stack.push(obj)
   return false
 }
 
