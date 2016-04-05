@@ -18,23 +18,22 @@ console.log(JSON.stringify(o)) //<-- throws
 
 ## Benchmarks
 
-The [json-stringify-safe](http://npm.im/json-stringify-safe) module supplies similar 
-functionality with slightly more info. Although not JSON,
-the core `util.inspect` method can be used for similar purposes (e.g. 
-logging) and also handles circular references.
+The [json-stringify-safe](http://npm.im/json-stringify-safe) module supplies similar functionality with more info and flexibility. 
+
+Although not JSON, the core `util.inspect` method can be used for similar purposes (e.g. logging) and also handles circular references.
 
 Here we compare `fast-safe-stringify` with these alternatives:
 
 ```js
-inspectBench*10000: 163.506ms
-jsonStringifySafeBench*10000: 71.508ms
-fastSafeStringifyBench*10000: 35.447ms
-inspectBench*10000: 135.528ms
-jsonStringifySafeBench*10000: 64.065ms
-fastSafeStringifyBench*10000: 33.956ms
+inspectBench*10000: 155.304ms
+jsonStringifySafeBench*10000: 86.004ms
+fastSafeStringifyBench*10000: 39.039ms
+inspectBench*10000: 133.499ms
+jsonStringifySafeBench*10000: 74.028ms
+fastSafeStringifyBench*10000: 38.698ms
 ```
 
-`fast-safe-stringify` is 2x faster than `json-stringify-safe` and 4x
+`fast-safe-stringify` is 2x faster than `json-stringify-safe` and 3x-4x
 faster than `util.inspect`.
 
 ## Acknowledgements
