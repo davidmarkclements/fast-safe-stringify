@@ -25,16 +25,21 @@ Although not JSON, the core `util.inspect` method can be used for similar purpos
 Here we compare `fast-safe-stringify` with these alternatives:
 
 ```js
-inspectBench*10000: 155.304ms
-jsonStringifySafeBench*10000: 86.004ms
-fastSafeStringifyBench*10000: 39.039ms
-inspectBench*10000: 133.499ms
-jsonStringifySafeBench*10000: 74.028ms
-fastSafeStringifyBench*10000: 38.698ms
+inspectBench*10000: 132.456ms
+jsonStringifySafeBench*10000: 67.382ms
+fastSafeStringifyBench*10000: 31.672ms
+
+inspectDeepBench*10000: 1632.687ms
+jsonStringifySafeDeepBench*10000: 1062.449ms
+fastSafeStringifyDeepBench*10000: 177.926ms
 ```
 
-`fast-safe-stringify` is 2x faster than `json-stringify-safe` and 3x-4x
-faster than `util.inspect`.
+`fast-safe-stringify` is 2x faster for small objects, 
+and 6x faster for large objects than `json-stringify-safe`.
+
+`fast-safe-stringify` is 4x faster for small objects, 
+and 9x faster for large objects than `util.inspect`.
+
 
 ## Acknowledgements
 

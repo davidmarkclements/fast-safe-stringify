@@ -1,19 +1,35 @@
-function circular(self, obj, stack) {
-  var pos = stack.indexOf(self)
-  if (++pos) stack.length = pos
-  else stack.push(self)
-  if (~stack.indexOf(obj)) return true
-  if (Object(obj) === obj) stack.push(obj)
-  return false
-}
-
-function r(k, v) {
-  return circular(this, v, r.stack) ? '[Circular]' : v
-}
-
-function stringify(arg) {
-  r.stack = []
-  return JSON.stringify(arg, r)
-}
-
 module.exports = stringify
+
+function stringify(obj) {
+  decirc(obj, '', [], null)
+  return JSON.stringify(obj)
+}
+function Circle(val, k, parent) {
+  this.val = val
+  this.k = k
+  this.parent = parent
+}
+Circle.prototype.toJSON = function toJSON() { 
+  this.parent[this.k] = this.val; 
+  return '[Circular]' 
+}
+function decirc(val, k, stack, parent) {
+  var keys, len, i, pos
+  if (typeof val !== 'object' || val === null) { return }
+  if (parent) {
+    pos = stack.indexOf(parent)
+    if (++pos) { stack.length = pos }
+    if (~stack.indexOf(val)) {
+      parent[k] = new Circle(val, k, parent)
+      return
+    }
+  }
+  stack.push(val)
+  keys = Object.keys(val)
+  len = keys.length
+  i = 0
+  for (; i < len; i++) {
+    k = keys[i]
+    decirc(val[k], k, stack, val)
+  }
+}

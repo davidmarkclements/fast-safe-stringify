@@ -4,13 +4,14 @@
   "description": "Safely and quickly serialize JavaScript objects",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap test.js"
   },
   "author": "David Mark Clements",
   "license": "MIT",
   "devDependencies": {
     "fastbench": "^1.0.1",
-    "json-stringify-safe": "^5.0.1"
+    "json-stringify-safe": "^5.0.1",
+    "tap": "^5.7.0"
   },
   "repository": {
     "type": "git",
