@@ -1,19 +1,19 @@
 module.exports = stringify
 
-function stringify(obj) {
+function stringify (obj) {
   decirc(obj, '', [], null)
   return JSON.stringify(obj)
 }
-function Circle(val, k, parent) {
+function Circle (val, k, parent) {
   this.val = val
   this.k = k
   this.parent = parent
 }
-Circle.prototype.toJSON = function toJSON() { 
-  this.parent[this.k] = this.val; 
-  return '[Circular]' 
+Circle.prototype.toJSON = function toJSON () {
+  this.parent[this.k] = this.val
+  return '[Circular]'
 }
-function decirc(val, k, stack, parent) {
+function decirc (val, k, stack, parent) {
   var keys, len, i, pos
   if (typeof val !== 'object' || val === null) { return }
   if (parent) {
