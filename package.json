@@ -8,6 +8,7 @@
   },
   "author": "David Mark Clements",
   "license": "MIT",
+  "typings": "index",
   "devDependencies": {
     "fastbench": "^1.0.1",
     "json-stringify-safe": "^5.0.1",
