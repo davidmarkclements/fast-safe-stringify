@@ -1,8 +1,8 @@
 module.exports = stringify
 
-function stringify (obj) {
+function stringify (obj, replacer, space) {
   decirc(obj, '', [], null)
-  return JSON.stringify(obj)
+  return JSON.stringify(obj, replacer, space)
 }
 function Circle (val, k, parent) {
   this.val = val
