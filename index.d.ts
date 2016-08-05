@@ -1,3 +1,3 @@
-declare function stringify(data: any): string;
+declare function stringify(data: any, replacer: any, space: any): string;
 
 export = stringify;

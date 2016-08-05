@@ -125,3 +125,20 @@ test('repeated non-circular references in arrays', function (assert) {
   assert.is(actual, expected)
   assert.end()
 })
+
+test('replacer and space default parameters', function (assert) {
+  var obj = { name: 'Tyrion Lannister', role: 'Hand of the Queen' }
+  var expected = s(obj, null, 0)
+  var actual = fss(obj)
+  assert.is(actual, expected)
+  assert.end()
+})
+
+test('replacer and space parameters', function (assert) {
+  var obj = { name: 'Qyburn', role: 'Hand of the Queen' }
+  var expected = s(obj, null, 2)
+  var actual = fss(obj, null, 2)
+  assert.is(actual, expected)
+  assert.end()
+})
+
