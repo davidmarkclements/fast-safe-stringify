@@ -1,6 +1,6 @@
 {
   "name": "fast-safe-stringify",
-  "version": "1.0.10",
+  "version": "1.1.0",
   "description": "Safely and quickly serialize JavaScript objects",
   "main": "index.js",
   "scripts": {
