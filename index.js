@@ -8,17 +8,22 @@ function Circle (val, k, parent) {
   this.val = val
   this.k = k
   this.parent = parent
+  this.count = 1
 }
 Circle.prototype.toJSON = function toJSON () {
-  this.parent[this.k] = this.val
+  if (--this.count === 0) {
+    this.parent[this.k] = this.val
+  }
   return '[Circular]'
 }
 function decirc (val, k, stack, parent) {
   var keys, len, i, pos
   if (typeof val !== 'object' || val === null) { return }
-  if (parent) {
+  else if (val instanceof Circle) {
+    val.count++
+    return
+  } else if (parent) {
     pos = stack.indexOf(parent)
-    if (++pos) { stack.length = pos }
     if (~stack.indexOf(val)) {
       parent[k] = new Circle(val, k, parent)
       return
@@ -32,4 +37,5 @@ function decirc (val, k, stack, parent) {
     k = keys[i]
     decirc(val[k], k, stack, val)
   }
+  stack.pop()
 }

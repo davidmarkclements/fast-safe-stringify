@@ -1,5 +1,6 @@
 var test = require('tap').test
 var fss = require('./')
+var clone = require('clone')
 var s = JSON.stringify
 
 test('circular reference to root', function (assert) {
@@ -123,5 +124,28 @@ test('repeated non-circular references in arrays', function (assert) {
   var expected = s(fixture)
   var actual = fss(fixture)
   assert.is(actual, expected)
+  assert.end()
+})
+
+test('double child circular reference', function (assert) {
+  // create circular reference
+  var child = {name: 'Tyrion Lannister'}
+  child.dinklage = child
+
+  // include it twice in the fixture
+  var fixture = {name: 'Tywin Lannister', childA: child, childB: child}
+  var cloned = clone(fixture)
+  var expected = s({
+    name: 'Tywin Lannister', childA: {
+      name: 'Tyrion Lannister', dinklage: '[Circular]'
+    }, childB: {
+      name: 'Tyrion Lannister', dinklage: '[Circular]'
+    }
+  })
+  var actual = fss(fixture)
+  assert.is(actual, expected)
+
+  // check if the fixture has not been modified
+  assert.deepEqual(fixture, cloned)
   assert.end()
 })
