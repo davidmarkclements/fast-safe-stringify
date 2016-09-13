@@ -17,13 +17,14 @@ Circle.prototype.toJSON = function toJSON () {
   return '[Circular]'
 }
 function decirc (val, k, stack, parent) {
-  var keys, len, i, pos
-  if (typeof val !== 'object' || val === null) { return }
-  else if (val instanceof Circle) {
+  var keys, len, i
+  if (typeof val !== 'object' || val === null) {
+    // not an object, nothing to do
+    return
+  } else if (val instanceof Circle) {
     val.count++
     return
   } else if (parent) {
-    pos = stack.indexOf(parent)
     if (~stack.indexOf(val)) {
       parent[k] = new Circle(val, k, parent)
       return

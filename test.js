@@ -29,7 +29,8 @@ test('child circular reference', function (assert) {
   var fixture = {name: 'Tywin Lannister', child: {name: 'Tyrion Lannister'}}
   fixture.child.dinklage = fixture.child
   var expected = s({
-    name: 'Tywin Lannister', child: {
+    name: 'Tywin Lannister',
+    child: {
       name: 'Tyrion Lannister', dinklage: '[Circular]'
     }
   })
@@ -42,7 +43,8 @@ test('nested child circular reference', function (assert) {
   var fixture = {name: 'Tywin Lannister', child: {name: 'Tyrion Lannister'}}
   fixture.child.actor = {dinklage: fixture.child}
   var expected = s({
-    name: 'Tywin Lannister', child: {
+    name: 'Tywin Lannister',
+    child: {
       name: 'Tyrion Lannister', actor: {dinklage: '[Circular]'}
     }
   })
@@ -136,9 +138,11 @@ test('double child circular reference', function (assert) {
   var fixture = {name: 'Tywin Lannister', childA: child, childB: child}
   var cloned = clone(fixture)
   var expected = s({
-    name: 'Tywin Lannister', childA: {
+    name: 'Tywin Lannister',
+    childA: {
       name: 'Tyrion Lannister', dinklage: '[Circular]'
-    }, childB: {
+    },
+    childB: {
       name: 'Tyrion Lannister', dinklage: '[Circular]'
     }
   })

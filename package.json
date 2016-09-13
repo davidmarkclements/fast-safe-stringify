@@ -13,8 +13,8 @@
     "clone": "^1.0.2",
     "fastbench": "^1.0.1",
     "json-stringify-safe": "^5.0.1",
-    "standard": "^6.0.8",
-    "tap": "^5.7.0"
+    "standard": "^8.0.0",
+    "tap": "^7.1.0"
   },
   "repository": {
     "type": "git",
