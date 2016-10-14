@@ -3,6 +3,10 @@
   "version": "1.1.1",
   "description": "Safely and quickly serialize JavaScript objects",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
   "scripts": {
     "test": "standard && tap test.js"
   },
