@@ -25,20 +25,39 @@ Although not JSON, the core `util.inspect` method can be used for similar purpos
 Here we compare `fast-safe-stringify` with these alternatives:
 
 ```js
-inspectBench*10000: 132.456ms
-jsonStringifySafeBench*10000: 67.382ms
-fastSafeStringifyBench*10000: 31.672ms
+inspectBench*10000: 179.608ms
+jsonStringifySafeBench*10000: 30.099ms
+fastSafeStringifyBench*10000: 19.965ms
 
-inspectDeepBench*10000: 1632.687ms
-jsonStringifySafeDeepBench*10000: 1062.449ms
-fastSafeStringifyDeepBench*10000: 177.926ms
+inspectCircBench*10000: 220.763ms
+jsonStringifyCircSafeBench*10000: 39.115ms
+fastSafeStringifyCircBench*10000: 29.444ms
+
+inspectDeepBench*10000: 2231.148ms
+jsonStringifySafeDeepBench*10000: 880.177ms
+fastSafeStringifyDeepBench*10000: 230.209ms
+
+inspectDeepCircBench*10000: 2221.848ms
+jsonStringifySafeDeepCircBench*10000: 922.314ms
+fastSafeStringifyDeepCircBench*10000: 236.024ms
 ```
 
-`fast-safe-stringify` is 2x faster for small objects, 
-and 6x faster for large objects than `json-stringify-safe`.
+## Protip
 
-`fast-safe-stringify` is 4x faster for small objects, 
-and 9x faster for large objects than `util.inspect`.
+Whether you're using `fast-safe-stringify` or `json-stringify-safe`
+if you're use case consists of deeply nested objects without circular
+references the following pattern will give you best results:
+
+```js
+var fastSafeStringify = require('fast-safe-stringify')
+function tryStringify (obj) {
+  try { return JSON.stringify(obj) } catch (_) {}
+}
+var str = tryStringify(deep) || fastSafeStringify(deep)
+```
+
+If you're likely do be handling mostly shallow or one level nested objects,
+this same pattern will degrade performance - it's entirely dependant on use case.
 
 
 ## Acknowledgements
