@@ -45,7 +45,7 @@ fastSafeStringifyDeepCircBench*10000: 236.024ms
 ## Protip
 
 Whether you're using `fast-safe-stringify` or `json-stringify-safe`
-if you're use case consists of deeply nested objects without circular
+if your use case consists of deeply nested objects without circular
 references the following pattern will give you best results:
 
 ```js
@@ -56,7 +56,7 @@ function tryStringify (obj) {
 var str = tryStringify(deep) || fastSafeStringify(deep)
 ```
 
-If you're likely do be handling mostly shallow or one level nested objects,
+If you're likely to be handling mostly shallow or one level nested objects,
 this same pattern will degrade performance - it's entirely dependant on use case.
 
 
