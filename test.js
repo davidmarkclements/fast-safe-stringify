@@ -153,3 +153,18 @@ test('double child circular reference', function (assert) {
   assert.deepEqual(fixture, cloned)
   assert.end()
 })
+
+test('allow JSON.stringify options', function (assert) {
+  var person = {name: 'Tyrion Lannister'}
+  var expected = '{\n\t"name": "Tywin Lannister"\n}'
+  var actual = fss(person, function (k, v) {
+    if (k === 'name') {
+      return 'Tywin Lannister'
+    } else {
+      return v
+    }
+  }, '\t')
+
+  assert.is(actual, expected)
+  assert.end()
+})
