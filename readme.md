@@ -66,7 +66,6 @@ other than 0 for `space` halves the speed, and providing a replacer function
 can result in a segfault. Given that the primary focus of this serializer is
 speed, the trade offs for supporting these options are not desirable.
 
-
 ## Acknowledgements
 
 Sponsored by [nearForm](http://nearform.com)
