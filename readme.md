@@ -12,13 +12,13 @@ var safeStringify = require('fast-safe-stringify')
 var o = {a: 1}
 o.o = o
 
-console.log(safeStringify(o))
+console.log(safeStringify(o))  // '{"a":1,"o":"[Circular]"}'
 console.log(JSON.stringify(o)) //<-- throws
 ```
 
 ## Benchmarks
 
-The [json-stringify-safe](http://npm.im/json-stringify-safe) module supplies similar functionality with more info and flexibility. 
+The [json-stringify-safe](http://npm.im/json-stringify-safe) module supplies similar functionality with more info and flexibility.
 
 Although not JSON, the core `util.inspect` method can be used for similar purposes (e.g. logging) and also handles circular references.
 
@@ -58,6 +58,13 @@ var str = tryStringify(deep) || fastSafeStringify(deep)
 
 If you're likely to be handling mostly shallow or one level nested objects,
 this same pattern will degrade performance - it's entirely dependant on use case.
+
+## JSON.stringify options
+
+JSON.stringify's `replacer` and `space` options are not supported. Any value
+other than 0 for `space` halves the speed, and providing a replacer function
+can result in a segfault. Given that the primary focus of this serializer is
+speed, the trade offs for supporting these options are not desirable.
 
 
 ## Acknowledgements
