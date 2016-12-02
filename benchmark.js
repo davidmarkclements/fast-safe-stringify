@@ -27,7 +27,7 @@ var run = bench([
   function fastSafeStringifyBench (cb) {
     fastSafeStringify(obj)
     setImmediate(cb)
-  },  
+  },
   function inspectCircBench (cb) {
     inspect(circ)
     setImmediate(cb)
@@ -71,7 +71,7 @@ var run = bench([
   function fastSafeStringifyDeepTryFirstBench (cb) {
     tryStringify(deep) || fastSafeStringify(deep)
     setImmediate(cb)
-  },
+  }
 ], 10000)
 
 function tryStringify (obj) {
