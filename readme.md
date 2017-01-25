@@ -24,7 +24,7 @@ Although not JSON, the core `util.inspect` method can be used for similar purpos
 
 Here we compare `fast-safe-stringify` with these alternatives:
 
-```js
+```
 inspectBench*10000: 179.608ms
 jsonStringifySafeBench*10000: 30.099ms
 fastSafeStringifyBench*10000: 19.965ms
