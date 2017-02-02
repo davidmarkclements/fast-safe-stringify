@@ -1,5 +1,5 @@
 module.exports = stringify
-
+stringify.default = stringify
 function stringify (obj) {
   decirc(obj, '', [], null)
   return JSON.stringify(obj)
