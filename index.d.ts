@@ -1,3 +1,3 @@
 declare function stringify(data: any): string;
 
-export = stringify;
+export default stringify;
