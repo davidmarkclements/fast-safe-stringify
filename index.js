@@ -1,7 +1,7 @@
 module.exports = stringify
 stringify.default = stringify
 function stringify (obj) {
-  if (obj.toJSON) {
+  if (obj && obj.toJSON) {
     JSON.stringify(obj.toJSON())
     return
   }
