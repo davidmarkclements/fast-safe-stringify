@@ -2,7 +2,7 @@ module.exports = stringify
 stringify.default = stringify
 function stringify (obj) {
   if (obj && typeof obj.toJSON === 'function') {
-    return JSON.stringify(obj.toJSON())
+    obj = obj.toJSON()
   }
   decirc(obj, '', [], null)
   return JSON.stringify(obj)
@@ -33,7 +33,6 @@ function decirc (val, k, stack, parent) {
       return
     }
   }
-  if (typeof val.toJSON === 'function') val = val.toJSON()
   stack.push(val)
   keys = Object.keys(val)
   len = keys.length
