@@ -5,7 +5,10 @@ function stringify (obj) {
     obj = obj.toJSON()
   }
   decirc(obj, '', [], null)
-  return JSON.stringify(obj)
+  var hasOpts = arguments.length > 1
+  return (hasOpts)
+    ? JSON.stringify.apply(JSON, arguments)
+    : JSON.stringify(obj)
 }
 function Circle (val, k, parent) {
   this.val = val
