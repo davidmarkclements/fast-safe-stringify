@@ -1,10 +1,9 @@
 module.exports = stringify
 stringify.default = stringify
 function stringify (obj) {
-  if (obj && typeof obj.toJSON === 'function') {
-    obj = obj.toJSON()
+  if (typeof obj === 'object' && typeof obj.toJSON !== 'function') {
+    decirc(obj, '', [], null)
   }
-  decirc(obj, '', [], null)
   return JSON.stringify(obj)
 }
 function Circle (val, k, parent) {
@@ -26,6 +25,8 @@ function decirc (val, k, stack, parent) {
     return
   } else if (val instanceof Circle) {
     val.count++
+    return
+  } else if (typeof val.toJSON === 'function') {
     return
   } else if (parent) {
     if (~stack.indexOf(val)) {

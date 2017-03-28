@@ -153,3 +153,34 @@ test('double child circular reference', function (assert) {
   assert.deepEqual(fixture, cloned)
   assert.end()
 })
+
+test('child circular reference with toJSON', function (assert) {
+  // Create a test object that has an overriden `toJSON` property
+  TestObject.prototype.toJSON = function () { return { special: 'case' } }
+  function TestObject (content) {}
+
+  // Creating a simple circular object structure
+  const parentObject = {}
+  parentObject.childObject = new TestObject()
+  parentObject.childObject.parentObject = parentObject
+
+  // Creating a simple circular object structure
+  const otherParentObject = new TestObject()
+  otherParentObject.otherChildObject = {}
+  otherParentObject.otherChildObject.otherParentObject = otherParentObject
+
+  // Making sure our original tests work
+  assert.deepEqual(parentObject.childObject.parentObject, parentObject)
+  assert.deepEqual(otherParentObject.otherChildObject.otherParentObject, otherParentObject)
+
+  // Should both be idempotent
+  assert.equal(fss(parentObject), '{"childObject":{"special":"case"}}')
+  assert.equal(fss(otherParentObject), '{"special":"case"}')
+
+  // Therefore the following assertion should be `true`
+  assert.deepEqual(parentObject.childObject.parentObject, parentObject)
+  assert.deepEqual(otherParentObject.otherChildObject.otherParentObject, otherParentObject)
+
+  assert.end()
+})
+
