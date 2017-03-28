@@ -184,3 +184,16 @@ test('child circular reference with toJSON', function (assert) {
   assert.end()
 })
 
+test('null object', function (assert) {
+  var expected = s(null)
+  var actual = fss(null)
+  assert.is(actual, expected)
+  assert.end()
+})
+
+test('null property', function (assert) {
+  var expected = s({ f: null })
+  var actual = fss({ f: null })
+  assert.is(actual, expected)
+  assert.end()
+})
