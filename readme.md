@@ -16,6 +16,23 @@ console.log(safeStringify(o))  // '{"a":1,"o":"[Circular]"}'
 console.log(JSON.stringify(o)) //<-- throws
 ```
 
+### toJSON support
+
+`fast-safe-stringify` would not attempt to detect circular dependencies
+on objects that have a `toJSON` function. If you need to do that, you
+will need to attach a `toJSON.forceDecirc = true` property, like
+so:
+
+```js
+var obj = {
+  toJSON: function () {
+    // something here..
+    return { something: 'else' }
+  }
+}
+obj.toJSON.forceDecirc = true
+```
+
 ## Benchmarks
 
 The [json-stringify-safe](http://npm.im/json-stringify-safe) module supplies similar functionality with more info and flexibility.

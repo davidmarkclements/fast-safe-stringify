@@ -197,3 +197,42 @@ test('null property', function (assert) {
   assert.is(actual, expected)
   assert.end()
 })
+
+test('nested child circular reference in toJSON', function (assert) {
+  var b = {}
+  var circle = { some: 'data' }
+  circle.circle = circle
+  var baz = { circle }
+  var a = { b, baz }
+  var o = {
+    a,
+    bar: a
+  }
+  b.toJSON = function () {
+    a.b = 2
+    return '[Redacted]'
+  }
+  baz.toJSON = function () {
+    a.baz = circle
+    return '[Redacted]'
+  }
+  baz.toJSON.forceDecirc = true
+
+  var expected = s({
+    a: {
+      b: '[Redacted]',
+      baz: '[Redacted]'
+    },
+    bar: {
+      b: 2,
+      baz: {
+        some: 'data',
+        circle: '[Circular]'
+      }
+    }
+  })
+  // fixture.child.actor[Symbol.for('forceDecirc')] = true
+  var actual = fss(o)
+  assert.is(actual, expected)
+  assert.end()
+})
