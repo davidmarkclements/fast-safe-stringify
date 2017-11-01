@@ -1,7 +1,7 @@
 module.exports = stringify
 stringify.default = stringify
 function stringify (obj) {
-  if (obj !== null && typeof obj === 'object' && typeof obj.toJSON !== 'function') {
+  if (obj !== null && typeof obj === 'object' && (typeof obj.toJSON !== 'function' || obj.toJSON.forceDecirc)) {
     decirc(obj, '', [], null)
   }
   return JSON.stringify(obj)
