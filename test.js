@@ -236,3 +236,24 @@ test('nested child circular reference in toJSON', function (assert) {
   assert.is(actual, expected)
   assert.end()
 })
+
+test('forceDecirc works on top level object passed to stringify', function (assert) {
+  var circ = {}
+  circ.circ = circ
+  var o = {
+    circ: circ,
+    toJSON: function () {
+      return { circ: this.circ, y: 20 }
+    }
+  }
+  o.toJSON.forceDecirc = true
+  var expected = s({
+    circ: {
+      circ: '[Circular]'
+    },
+    y: 20
+  })
+  var actual = fss(o)
+  assert.is(actual, expected)
+  assert.end()
+})
