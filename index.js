@@ -19,7 +19,7 @@ Circle.prototype.toJSON = function toJSON () {
   return '[Circular]'
 }
 function decirc (val, k, stack, parent) {
-  var keys, len, i
+  var keys, len, i, j, exists, stackLen
   if (typeof val !== 'object' || val === null) {
     // not an object, nothing to do
     return
@@ -29,13 +29,25 @@ function decirc (val, k, stack, parent) {
   } else if (typeof val.toJSON === 'function' && !val.toJSON.forceDecirc) {
     return
   } else if (parent) {
-    if (~stack.indexOf(val)) {
+    j = 0
+    exists = false
+    stackLen = stack.length
+    for (; j < stackLen; j++) {
+      if (stack[j] === val) {
+        exists = true
+        break
+      }
+    }
+    if (exists) {
       parent[k] = new Circle(val, k, parent)
       return
     }
   }
   stack.push(val)
-  keys = Object.keys(val)
+  keys = []
+  for (var key in val) {
+    if (Object.prototype.hasOwnProperty.call(val, key)) keys.push(key)
+  }
   len = keys.length
   i = 0
   for (; i < len; i++) {
