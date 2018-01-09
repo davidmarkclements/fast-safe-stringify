@@ -63,19 +63,7 @@ var run = bench([
   function fastSafeStringifyDeepCircBench (cb) {
     fastSafeStringify(deepCirc)
     setImmediate(cb)
-  },
-  function jsonStringifyDeepTryFirstBench (cb) {
-    tryStringify(deep) || jsonStringifySafe(deep)
-    setImmediate(cb)
-  },
-  function fastSafeStringifyDeepTryFirstBench (cb) {
-    tryStringify(deep) || fastSafeStringify(deep)
-    setImmediate(cb)
   }
 ], 10000)
-
-function tryStringify (obj) {
-  try { return JSON.stringify(obj) } catch (_) {}
-}
 
 run(run)
