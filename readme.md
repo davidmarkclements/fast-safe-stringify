@@ -42,21 +42,21 @@ Although not JSON, the core `util.inspect` method can be used for similar purpos
 Here we compare `fast-safe-stringify` with these alternatives:
 
 ```
-inspectBench*10000: 179.608ms
-jsonStringifySafeBench*10000: 30.099ms
-fastSafeStringifyBench*10000: 19.965ms
+inspectBench*10000: 44.441ms
+jsonStringifySafeBench*10000: 38.324ms
+fastSafeStringifyBench*10000: 25.165ms
 
-inspectCircBench*10000: 220.763ms
-jsonStringifyCircSafeBench*10000: 39.115ms
-fastSafeStringifyCircBench*10000: 29.444ms
+inspectCircBench*10000: 66.541ms
+jsonStringifyCircSafeBench*10000: 37.949ms
+fastSafeStringifyCircBench*10000: 33.801ms
 
-inspectDeepBench*10000: 2231.148ms
-jsonStringifySafeDeepBench*10000: 880.177ms
-fastSafeStringifyDeepBench*10000: 230.209ms
+inspectDeepBench*10000: 377.053ms
+jsonStringifySafeDeepBench*10000: 658.650ms
+fastSafeStringifyDeepBench*10000: 268.092ms
 
-inspectDeepCircBench*10000: 2221.848ms
-jsonStringifySafeDeepCircBench*10000: 922.314ms
-fastSafeStringifyDeepCircBench*10000: 236.024ms
+inspectDeepCircBench*10000: 351.387ms
+jsonStringifySafeDeepCircBench*10000: 695.964ms
+fastSafeStringifyDeepCircBench*10000: 256.660ms
 ```
 
 ## Protip
