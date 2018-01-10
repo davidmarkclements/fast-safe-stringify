@@ -1,11 +1,11 @@
 # fast-safe-stringify
 
-Safe and fast replacement serialization replacement for [JSON.stringify][].
+Safe and fast serialization alternative to [JSON.stringify][].
 
 Gracefully handles circular structures instead of throwing.
 
-Provides a stable version as well that will also gracefully handle circular
-structures.
+Provides a deterministic ("stable") version as well that will also gracefully
+handle circular structures. See the example below for further information.
 
 ## Usage
 
@@ -41,14 +41,16 @@ console.log(serialized)
 // }
 ```
 
-Using the stable version also works the same as [JSON.stringify][]:
+Using the deterministic version also works the same:
 
 ```js
-const stableSafeStringify = require('fast-safe-stringify').stable
+const safeStringify = require('fast-safe-stringify')
 const o = { b: 1, a: 0 }
 o.o = o
 
 console.log(safeStringify(o))
+// '{"b":1,"a":0,"o":"[Circular]"}'
+console.log(safeStringify.stable(o))
 // '{"a":0,"b":1,"o":"[Circular]"}'
 console.log(JSON.stringify(o))
 // TypeError: Converting circular structure to JSON
@@ -58,8 +60,8 @@ console.log(JSON.stringify(o))
 
 [JSON.stringify][]'s `replacer` and `space` options are supported and work the
 same as JSON.stringify with one exception: in case a circular structure is
-detected the replacer will receive the string `[Circular]` as argument instead
-of the circular object itself.
+detected the replacer will receive the string `[Circular]` as the argument
+instead of the circular object itself.
 
 ## Benchmarks
 
@@ -87,7 +89,7 @@ jsonStringifySafeDeepCircBench*10000: 1361.704ms
 fastSafeStringifyDeepCircBench*10000: 383.083ms
 ```
 
-Now we compare `fast-safe-stringify` stable with known alternatives:
+Comparing the deterministic `fast-safe-stringify` with known alternatives:
 (Running the `fast-json-stable-stringify` [benchmark][])
 
 ```md
