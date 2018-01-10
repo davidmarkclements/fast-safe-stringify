@@ -2,18 +2,21 @@ var bench = require('fastbench')
 var inspect = require('util').inspect
 var jsonStringifySafe = require('json-stringify-safe')
 var fastSafeStringify = require('./')
-var obj = {foo: 1}
+var array = new Array(10).fill(0).map((_, i) => i)
+var obj = {foo: array}
 var circ = JSON.parse(JSON.stringify(obj))
-circ.o = {obj: circ}
+circ.o = {obj: circ, array}
 var deep = require('./package.json')
 deep.deep = JSON.parse(JSON.stringify(deep))
 deep.deep.deep = JSON.parse(JSON.stringify(deep))
 deep.deep.deep.deep = JSON.parse(JSON.stringify(deep))
+deep.array = array
 
 var deepCirc = JSON.parse(JSON.stringify(deep))
 deepCirc.deep.deep.deep.circ = deepCirc
 deepCirc.deep.deep.circ = deepCirc
 deepCirc.deep.circ = deepCirc
+deepCirc.array = array
 
 var run = bench([
   function inspectBench (cb) {
