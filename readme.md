@@ -31,21 +31,22 @@ Here we compare `fast-safe-stringify` with some alternatives:
 (Lenovo T450s with a i7-5600U CPU using Node.js 8.9.4)
 
 ```md
-inspectBench*10000: 44.441ms
-jsonStringifySafeBench*10000: 38.324ms
-fastSafeStringifyBench*10000: 25.165ms
+inspectBench*10000: 57.636ms
+jsonStringifySafeBench*10000: 58.737ms
+fastSafeStringifyBench*10000: 25.555ms
 
-inspectCircBench*10000: 66.541ms
-jsonStringifyCircSafeBench*10000: 37.949ms
-fastSafeStringifyCircBench*10000: 33.801ms
+inspectCircBench*10000: 137.803ms
+jsonStringifyCircSafeBench*10000: 110.460ms
+fastSafeStringifyCircBench*10000: 38.039ms
 
-inspectDeepBench*10000: 377.053ms
-jsonStringifySafeDeepBench*10000: 658.650ms
-fastSafeStringifyDeepBench*10000: 268.092ms
+inspectDeepBench*10000: 600.103ms
+jsonStringifySafeDeepBench*10000: 1345.514ms
+fastSafeStringifyDeepBench*10000: 369.198ms
 
-inspectDeepCircBench*10000: 351.387ms
-jsonStringifySafeDeepCircBench*10000: 695.964ms
-fastSafeStringifyDeepCircBench*10000: 256.660ms
+inspectDeepCircBench*10000: 609.102ms
+jsonStringifySafeDeepCircBench*10000: 1361.704ms
+fastSafeStringifyDeepCircBench*10000: 383.083ms
+
 ```
 
 ## JSON.stringify options
