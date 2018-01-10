@@ -1,41 +1,35 @@
 module.exports = stringify
 stringify.default = stringify
-function stringify (obj) {
+var arr = []
+function stringify (obj, replacer, spacer) {
   decirc(obj, '', [], null)
-  return JSON.stringify(obj)
-}
-function Circle (val, k, parent) {
-  this.val = val
-  this.k = k
-  this.parent = parent
-  this.count = 1
-}
-Circle.prototype.toJSON = function toJSON () {
-  if (--this.count === 0) {
-    this.parent[this.k] = this.val
+  var res = JSON.stringify(obj, replacer, spacer)
+  while (arr.length !== 0) {
+    var part = arr.pop()
+    part[0][part[1]] = part[2]
   }
-  return '[Circular]'
+  return res
 }
 function decirc (val, k, stack, parent) {
+  var i
   if (typeof val === 'object' && val !== null) {
-    if (typeof val.toJSON === 'function') {
-      if (val instanceof Circle) {
-        val.count++
-        return
-      }
-      if (val.toJSON.forceDecirc === undefined) {
-        return
-      }
-    }
-    for (var i = 0; i < stack.length; i++) {
+    for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
-        parent[k] = new Circle(val, k, parent)
+        parent[k] = '[Circular]'
+        arr.push([parent, k, val])
         return
       }
     }
     stack.push(val)
-    for (var key in val) {
-      if (Object.prototype.hasOwnProperty.call(val, key)) {
+    // Optimize for Arrays. Big arrays could kill the performance otherwise!
+    if (Array.isArray(val)) {
+      for (i = 0; i < val.length; i++) {
+        decirc(val[i], i, stack, val)
+      }
+    } else {
+      var keys = Object.keys(val)
+      for (i = 0; i < keys.length; i++) {
+        var key = keys[i]
         decirc(val[key], key, stack, val)
       }
     }
