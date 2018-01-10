@@ -216,7 +216,6 @@ test('nested child circular reference in toJSON', function (assert) {
     a.baz = circle
     return '[Redacted]'
   }
-  baz.toJSON.forceDecirc = true
 
   var expected = s({
     a: {
@@ -231,7 +230,6 @@ test('nested child circular reference in toJSON', function (assert) {
       }
     }
   })
-  // fixture.child.actor[Symbol.for('forceDecirc')] = true
   var actual = fss(o)
   assert.is(actual, expected)
   assert.end()
