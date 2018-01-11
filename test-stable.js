@@ -199,19 +199,26 @@ test('null property', function (assert) {
 })
 
 test('nested child circular reference in toJSON', function (assert) {
-  const b = {}
-  const circle = { some: 'data' }
-  circle.circle = '[Circular]'
-  const baz = { circle }
-  const a = { b, baz }
-  const o = { a, bar: a }
-  b.toJSON = function () {
-    a.b = 2
-    return '[Redacted]'
+  var circle = { some: 'data' }
+  circle.circle = circle
+  var a = {
+    b: {
+      toJSON: function () {
+        a.b = 2
+        return '[Redacted]'
+      }
+    },
+    baz: {
+      circle,
+      toJSON: function () {
+        a.baz = circle
+        return '[Redacted]'
+      }
+    }
   }
-  baz.toJSON = function () {
-    a.baz = circle
-    return '[Redacted]'
+  var o = {
+    a,
+    bar: a
   }
 
   const expected = s({
