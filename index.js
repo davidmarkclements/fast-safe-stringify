@@ -7,7 +7,7 @@ const arr = []
 
 // Regular stringify
 function stringify (obj, replacer, spacer) {
-  decirc(obj, '', [])
+  decirc(obj, '', [], undefined)
   const res = JSON.stringify(obj, replacer, spacer)
   while (arr.length !== 0) {
     const part = arr.pop()
@@ -54,7 +54,7 @@ function compareFunction (a, b) {
 }
 
 function deterministicStringify (obj, replacer, spacer) {
-  const tmp = deterministicDecirc(obj, '', []) || obj
+  const tmp = deterministicDecirc(obj, '', [], undefined) || obj
   const res = JSON.stringify(tmp, replacer, spacer)
   while (arr.length !== 0) {
     const part = arr.pop()
