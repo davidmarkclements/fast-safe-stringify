@@ -50,18 +50,38 @@ o.o = o
 
 console.log(safeStringify(o))
 // '{"b":1,"a":0,"o":"[Circular]"}'
-console.log(safeStringify.stable(o))
+console.log(safeStringify.stableStringify(o))
 // '{"a":0,"b":1,"o":"[Circular]"}'
 console.log(JSON.stringify(o))
 // TypeError: Converting circular structure to JSON
 ```
 
-## JSON.stringify options
+## Differences to JSON.stringify
 
-[JSON.stringify][]'s `replacer` and `space` options are supported and work the
-same as JSON.stringify with one exception: in case a circular structure is
-detected the replacer will receive the string `[Circular]` as the argument
-instead of the circular object itself.
+In general the behavior is identical to [JSON.stringify][]. The [`replacer`][]
+and [`space`][] options are also available.
+
+A few exceptions exist to [JSON.stringify][] while using [`toJSON`][] or
+[`replacer`][]:
+
+### Regular safe stringify
+
+- Manipulating a circular structure of the passed in value in a `toJSON` or the
+  `replacer` is not possible! It is possible for any other value and property.
+
+- In case a circular structure is detected and the [`replacer`][] is used it
+  will receive the string `[Circular]` as the argument instead of the circular
+  object itself.
+
+### Deterministic ("stable") safe stringify
+
+- Manipulating the input object either in a [`toJSON`][] or the [`replacer`][]
+  function will not have any effect on the output. The output entirely relies on
+  the shape the input value had at the point passed to the stringify function!
+
+- In case a circular structure is detected and the [`replacer`][] is used it
+  will receive the string `[Circular]` as the argument instead of the circular
+  object itself.
 
 ## Benchmarks
 
@@ -128,5 +148,8 @@ Sponsored by [nearForm](http://nearform.com)
 
 MIT
 
-[JSON.stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+[`replacer`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The%20replacer%20parameter
+[`space`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The%20space%20argument
+[`toJSON`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior
 [benchmark]: https://github.com/epoberezkin/fast-json-stable-stringify/blob/67f688f7441010cfef91a6147280cc501701e83b/benchmark
+[JSON.stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
