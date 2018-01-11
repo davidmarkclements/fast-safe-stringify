@@ -10,7 +10,7 @@ function stringify (obj, replacer, spacer) {
   decirc(obj, '', [], undefined)
   const res = JSON.stringify(obj, replacer, spacer)
   while (arr.length !== 0) {
-    const part = arr.pop()
+    var part = arr.pop()
     part[0][part[1]] = part[2]
   }
   return res
@@ -34,7 +34,7 @@ function decirc (val, k, stack, parent) {
     } else {
       const keys = Object.keys(val)
       for (i = 0; i < keys.length; i++) {
-        const key = keys[i]
+        var key = keys[i]
         decirc(val[key], key, stack, val)
       }
     }
@@ -57,7 +57,7 @@ function deterministicStringify (obj, replacer, spacer) {
   const tmp = deterministicDecirc(obj, '', [], undefined) || obj
   const res = JSON.stringify(tmp, replacer, spacer)
   while (arr.length !== 0) {
-    const part = arr.pop()
+    var part = arr.pop()
     part[0][part[1]] = part[2]
   }
   return res
@@ -87,7 +87,7 @@ function deterministicDecirc (val, k, stack, parent) {
       const tmp = {}
       const keys = Object.keys(val).sort(compareFunction)
       for (i = 0; i < keys.length; i++) {
-        const key = keys[i]
+        var key = keys[i]
         deterministicDecirc(val[key], key, stack, val)
         tmp[key] = val[key]
       }
