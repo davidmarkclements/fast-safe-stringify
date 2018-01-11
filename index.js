@@ -1,6 +1,7 @@
 module.exports = stringify
 stringify.default = stringify
-stringify.stable = stableStringify
+stringify.stable = deterministicStringify
+stringify.stableStringify = deterministicStringify
 
 const arr = []
 
@@ -42,7 +43,7 @@ function decirc (val, k, stack, parent) {
 }
 
 // Stable-stringify
-function stable (a, b) {
+function compareFunction (a, b) {
   if (a < b) {
     return -1
   }
@@ -52,8 +53,8 @@ function stable (a, b) {
   return 0
 }
 
-function stableStringify (obj, replacer, spacer) {
-  const tmp = decircStable(obj, '', [], null) || obj
+function deterministicStringify (obj, replacer, spacer) {
+  const tmp = deterministicDecirc(obj, '', [], null) || obj
   const res = JSON.stringify(tmp, replacer, spacer)
   while (arr.length !== 0) {
     const part = arr.pop()
@@ -62,7 +63,7 @@ function stableStringify (obj, replacer, spacer) {
   return res
 }
 
-function decircStable (val, k, stack, parent) {
+function deterministicDecirc (val, k, stack, parent) {
   var i
   if (typeof val === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
@@ -79,15 +80,15 @@ function decircStable (val, k, stack, parent) {
     // Optimize for Arrays. Big arrays could kill the performance otherwise!
     if (Array.isArray(val)) {
       for (i = 0; i < val.length; i++) {
-        decircStable(val[i], i, stack, val)
+        deterministicDecirc(val[i], i, stack, val)
       }
     } else {
       // Create a temporary object in the required way
       const tmp = {}
-      const keys = Object.keys(val).sort(stable)
+      const keys = Object.keys(val).sort(compareFunction)
       for (i = 0; i < keys.length; i++) {
         const key = keys[i]
-        decircStable(val[key], key, stack, val)
+        deterministicDecirc(val[key], key, stack, val)
         tmp[key] = val[key]
       }
       if (parent) {
