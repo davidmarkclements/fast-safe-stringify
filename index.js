@@ -34,10 +34,10 @@ function decirc (val, k, stack, parent) {
       }
     }
     stack.push(val)
-    var keys = Object.keys(val)
-    for (var j = 0; j < keys.length; j++) {
-      var key = keys[j]
-      decirc(val[key], key, stack, val)
+    for (var key in val) {
+      if (Object.prototype.hasOwnProperty.call(val, key)) {
+        decirc(val[key], key, stack, val)
+      }
     }
     stack.pop()
   }
