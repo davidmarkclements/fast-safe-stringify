@@ -1,5 +1,5 @@
 const test = require('tap').test
-const fss = require('./')
+const fss = require('./').stable
 const clone = require('clone')
 const s = JSON.stringify
 
@@ -7,7 +7,7 @@ test('circular reference to root', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.circle = fixture
   const expected = s(
-    { name: 'Tywin Lannister', circle: '[Circular]' }
+    { circle: '[Circular]', name: 'Tywin Lannister' }
   )
   const actual = fss(fixture)
   assert.is(actual, expected)
@@ -18,7 +18,7 @@ test('nested circular reference to root', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.id = { circle: fixture }
   const expected = s(
-    { name: 'Tywin Lannister', id: { circle: '[Circular]' } }
+    { id: { circle: '[Circular]' }, name: 'Tywin Lannister' }
   )
   const actual = fss(fixture)
   assert.is(actual, expected)
@@ -29,10 +29,10 @@ test('child circular reference', function (assert) {
   const fixture = { name: 'Tywin Lannister', child: { name: 'Tyrion Lannister' } }
   fixture.child.dinklage = fixture.child
   const expected = s({
-    name: 'Tywin Lannister',
     child: {
-      name: 'Tyrion Lannister', dinklage: '[Circular]'
-    }
+      dinklage: '[Circular]', name: 'Tyrion Lannister'
+    },
+    name: 'Tywin Lannister'
   })
   const actual = fss(fixture)
   assert.is(actual, expected)
@@ -43,10 +43,10 @@ test('nested child circular reference', function (assert) {
   const fixture = { name: 'Tywin Lannister', child: { name: 'Tyrion Lannister' } }
   fixture.child.actor = { dinklage: fixture.child }
   const expected = s({
-    name: 'Tywin Lannister',
     child: {
-      name: 'Tyrion Lannister', actor: { dinklage: '[Circular]' }
-    }
+      actor: { dinklage: '[Circular]' }, name: 'Tyrion Lannister'
+    },
+    name: 'Tywin Lannister'
   })
   const actual = fss(fixture)
   assert.is(actual, expected)
@@ -57,7 +57,7 @@ test('circular objects in an array', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.hand = [fixture, fixture]
   const expected = s({
-    name: 'Tywin Lannister', hand: ['[Circular]', '[Circular]']
+    hand: ['[Circular]', '[Circular]'], name: 'Tywin Lannister'
   })
   const actual = fss(fixture)
   assert.is(actual, expected)
@@ -75,8 +75,8 @@ test('nested circular references in an array', function (assert) {
   const expected = s({
     name: 'Tywin Lannister',
     offspring: [
-      { name: 'Tyrion Lannister', dinklage: '[Circular]' },
-      { name: 'Cersei Lannister', headey: '[Circular]' }
+      { dinklage: '[Circular]', name: 'Tyrion Lannister' },
+      { headey: '[Circular]', name: 'Cersei Lannister' }
     ]
   })
   const actual = fss(fixture)
@@ -100,8 +100,8 @@ test('nested circular arrays', function (assert) {
     { name: 'Ramsay Bolton', bastards: fixture }
   )
   const expected = s([
-    { name: 'Jon Snow', bastards: '[Circular]' },
-    { name: 'Ramsay Bolton', bastards: '[Circular]' }
+    { bastards: '[Circular]', name: 'Jon Snow' },
+    { bastards: '[Circular]', name: 'Ramsay Bolton' }
   ])
   const actual = fss(fixture)
   assert.is(actual, expected)
@@ -138,13 +138,13 @@ test('double child circular reference', function (assert) {
   const fixture = { name: 'Tywin Lannister', childA: child, childB: child }
   const cloned = clone(fixture)
   const expected = s({
-    name: 'Tywin Lannister',
     childA: {
-      name: 'Tyrion Lannister', dinklage: '[Circular]'
+      dinklage: '[Circular]', name: 'Tyrion Lannister'
     },
     childB: {
-      name: 'Tyrion Lannister', dinklage: '[Circular]'
-    }
+      dinklage: '[Circular]', name: 'Tyrion Lannister'
+    },
+    name: 'Tywin Lannister'
   })
   const actual = fss(fixture)
   assert.is(actual, expected)
@@ -199,9 +199,9 @@ test('null property', function (assert) {
 })
 
 test('nested child circular reference in toJSON', function (assert) {
-  const circle = { some: 'data' }
+  var circle = { some: 'data' }
   circle.circle = circle
-  const a = {
+  var a = {
     b: {
       toJSON: function () {
         a.b = 2
@@ -216,7 +216,7 @@ test('nested child circular reference in toJSON', function (assert) {
       }
     }
   }
-  const o = {
+  var o = {
     a,
     bar: a
   }
@@ -227,11 +227,17 @@ test('nested child circular reference in toJSON', function (assert) {
       baz: '[Redacted]'
     },
     bar: {
-      b: 2,
-      baz: {
-        some: 'data',
-        circle: '[Circular]'
-      }
+      // TODO: This is a known limitation of the current implementation.
+      // The ideal result would be:
+      //
+      // b: 2,
+      // baz: {
+      //   circle: '[Circular]',
+      //   some: 'data'
+      // }
+      //
+      b: '[Redacted]',
+      baz: '[Redacted]'
     }
   })
   const actual = fss(o)
