@@ -92,21 +92,20 @@ Here we compare `fast-safe-stringify` with some alternatives:
 (Lenovo T450s with a i7-5600U CPU using Node.js 8.9.4)
 
 ```md
-inspectBench*10000: 57.636ms
-jsonStringifySafeBench*10000: 58.737ms
-fastSafeStringifyBench*10000: 25.555ms
+fast-safe-stringify:   simple object x 1,121,497 ops/sec ±0.75% (97 runs sampled)
+fast-safe-stringify:   circular      x 560,126 ops/sec ±0.64% (96 runs sampled)
+fast-safe-stringify:   deep          x 32,472 ops/sec ±0.57% (95 runs sampled)
+fast-safe-stringify:   deep circular x 32,513 ops/sec ±0.80% (92 runs sampled)
 
-inspectCircBench*10000: 137.803ms
-jsonStringifyCircSafeBench*10000: 110.460ms
-fastSafeStringifyCircBench*10000: 38.039ms
+util.inspect:          simple object x 272,837 ops/sec ±1.48% (90 runs sampled)
+util.inspect:          circular      x 116,896 ops/sec ±1.19% (95 runs sampled)
+util.inspect:          deep          x 19,382 ops/sec ±0.66% (92 runs sampled)
+util.inspect:          deep circular x 18,717 ops/sec ±0.63% (96 runs sampled)
 
-inspectDeepBench*10000: 600.103ms
-jsonStringifySafeDeepBench*10000: 1345.514ms
-fastSafeStringifyDeepBench*10000: 369.198ms
-
-inspectDeepCircBench*10000: 609.102ms
-jsonStringifySafeDeepCircBench*10000: 1361.704ms
-fastSafeStringifyDeepCircBench*10000: 383.083ms
+json-stringify-safe:   simple object x 233,621 ops/sec ±0.97% (94 runs sampled)
+json-stringify-safe:   circular      x 110,409 ops/sec ±1.85% (95 runs sampled)
+json-stringify-safe:   deep          x 8,705 ops/sec ±0.87% (96 runs sampled)
+json-stringify-safe:   deep circular x 8,336 ops/sec ±2.20% (93 runs sampled)
 ```
 
 Comparing the deterministic `fast-safe-stringify` with known alternatives:
