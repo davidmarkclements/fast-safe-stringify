@@ -1,5 +1,14 @@
 # Changelog
 
+## v.2.1.0
+
+This release only changed the deterministic ("stable") stringify version
+
+Features
+
+- Improved performance in most cases
+- Manipulation of the input value is from now on possible
+
 ## v.2.0.0
 
 Features
