@@ -227,17 +227,11 @@ test('nested child circular reference in toJSON', function (assert) {
       baz: '[Redacted]'
     },
     bar: {
-      // TODO: This is a known limitation of the current implementation.
-      // The ideal result would be:
-      //
-      // b: 2,
-      // baz: {
-      //   circle: '[Circular]',
-      //   some: 'data'
-      // }
-      //
-      b: '[Redacted]',
-      baz: '[Redacted]'
+      b: 2,
+      baz: {
+        circle: '[Circular]',
+        some: 'data'
+      }
     }
   })
   const actual = fss(o)

@@ -45,12 +45,14 @@ Using the deterministic version also works the same:
 
 ```js
 const safeStringify = require('fast-safe-stringify')
+const stableSafeStringify = safeStringify.stableStringify
+
 const o = { b: 1, a: 0 }
 o.o = o
 
 console.log(safeStringify(o))
 // '{"b":1,"a":0,"o":"[Circular]"}'
-console.log(safeStringify.stableStringify(o))
+console.log(stableSafeStringify(o))
 // '{"a":0,"b":1,"o":"[Circular]"}'
 console.log(JSON.stringify(o))
 // TypeError: Converting circular structure to JSON
@@ -62,22 +64,12 @@ In general the behavior is identical to [JSON.stringify][]. The [`replacer`][]
 and [`space`][] options are also available.
 
 A few exceptions exist to [JSON.stringify][] while using [`toJSON`][] or
-[`replacer`][]:
+[`replacer`][] in combination with the regular safe stringify:
 
 ### Regular safe stringify
 
 - Manipulating a circular structure of the passed in value in a `toJSON` or the
   `replacer` is not possible! It is possible for any other value and property.
-
-- In case a circular structure is detected and the [`replacer`][] is used it
-  will receive the string `[Circular]` as the argument instead of the circular
-  object itself.
-
-### Deterministic ("stable") safe stringify
-
-- Manipulating the input object either in a [`toJSON`][] or the [`replacer`][]
-  function will not have any effect on the output. The output entirely relies on
-  the shape the input value had at the point passed to the stringify function!
 
 - In case a circular structure is detected and the [`replacer`][] is used it
   will receive the string `[Circular]` as the argument instead of the circular
