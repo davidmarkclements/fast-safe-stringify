@@ -5,7 +5,8 @@ Safe and fast serialization alternative to [JSON.stringify][].
 Gracefully handles circular structures instead of throwing.
 
 Provides a deterministic ("stable") version as well that will also gracefully
-handle circular structures. See the example below for further information.
+handle circular structures. See the example below for further information. For
+the stable version also look at: [`safe-stable-stringify`][].
 
 ## Usage
 
@@ -83,6 +84,10 @@ A few exceptions exist to [JSON.stringify][] while using [`toJSON`][] or
   will receive the string `[Circular]` as the argument instead of the circular
   object itself.
 
+A side effect free variation without these limitations can be found as well
+([`safe-stable-stringify`][]). It is also faster than the current
+implementation.
+
 ## Benchmarks
 
 Although not JSON, the Node.js `util.inspect` method can be used for similar
@@ -108,18 +113,7 @@ json-stringify-safe:   deep          x 8,705 ops/sec ±0.87% (96 runs sampled)
 json-stringify-safe:   deep circular x 8,336 ops/sec ±2.20% (93 runs sampled)
 ```
 
-Comparing the deterministic `fast-safe-stringify` with known alternatives:
-(Running the `fast-json-stable-stringify` [benchmark][])
-
-```md
-fast-json-stable-stringify x 15,494 ops/sec ±1.59% (88 runs sampled)
-json-stable-stringify x 12,229 ops/sec ±1.32% (89 runs sampled)
-fast-stable-stringify x 16,226 ops/sec ±0.65% (92 runs sampled)
-faster-stable-stringify x 13,900 ops/sec ±1.05% (90 runs sampled)
-fast-safe-stringify x 26,528 ops/sec ±1.40% (91 runs sampled)
-
-The fastest is fast-safe-stringify
-```
+For comparison of the deterministic version check [`safe-stable-stringify`][].
 
 ## Protip
 
@@ -148,6 +142,7 @@ Sponsored by [nearForm](http://nearform.com)
 MIT
 
 [`replacer`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The%20replacer%20parameter
+[`safe-stable-stringify`]: https://github.com/BridgeAR/safe-stable-stringify
 [`space`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The%20space%20argument
 [`toJSON`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior
 [benchmark]: https://github.com/epoberezkin/fast-json-stable-stringify/blob/67f688f7441010cfef91a6147280cc501701e83b/benchmark
