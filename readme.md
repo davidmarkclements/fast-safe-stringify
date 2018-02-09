@@ -56,8 +56,9 @@ console.log(JSON.stringify(o))
 // TypeError: Converting circular structure to JSON
 ```
 
-Nevertheless we recommend to use [`safe-stable-stringify`][] instead as it is
-faster and has no side effects.
+A faster and side-effect free implementation is available in the
+[safe-stable-stringify][] module. However it is still considered experimental
+due to a new and more complex implementation.
 
 ## Differences to JSON.stringify
 
@@ -88,8 +89,8 @@ A few exceptions exist to [JSON.stringify][] while using [`toJSON`][] or
 
 A side effect free variation without these limitations can be found as well
 ([`safe-stable-stringify`][]). It is also faster than the current
-implementation. It is still considered experimental though as it is still new
-and a more complex implementation.
+implementation. It is still considered experimental due to a new and more
+complex implementation.
 
 ## Benchmarks
 
