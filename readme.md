@@ -5,8 +5,7 @@ Safe and fast serialization alternative to [JSON.stringify][].
 Gracefully handles circular structures instead of throwing.
 
 Provides a deterministic ("stable") version as well that will also gracefully
-handle circular structures. See the example below for further information. For
-the stable version also look at: [`safe-stable-stringify`][].
+handle circular structures. See the example below for further information.
 
 ## Usage
 
@@ -56,6 +55,9 @@ console.log(safeStringify.stableStringify(o))
 console.log(JSON.stringify(o))
 // TypeError: Converting circular structure to JSON
 ```
+
+Nevertheless we recommend to use [`safe-stable-stringify`][] instead as it is
+faster and has no side effects.
 
 ## Differences to JSON.stringify
 
@@ -113,7 +115,8 @@ json-stringify-safe:   deep          x 8,705 ops/sec ±0.87% (96 runs sampled)
 json-stringify-safe:   deep circular x 8,336 ops/sec ±2.20% (93 runs sampled)
 ```
 
-For comparison of the deterministic version check [`safe-stable-stringify`][].
+For stable stringify comparisons, see the performance benchmarks in the
+[`safe-stable-stringify`][] readme.
 
 ## Protip
 
