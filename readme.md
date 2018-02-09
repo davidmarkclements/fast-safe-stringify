@@ -88,7 +88,8 @@ A few exceptions exist to [JSON.stringify][] while using [`toJSON`][] or
 
 A side effect free variation without these limitations can be found as well
 ([`safe-stable-stringify`][]). It is also faster than the current
-implementation.
+implementation. It is still considered experimental though as it is still new
+and a more complex implementation.
 
 ## Benchmarks
 
