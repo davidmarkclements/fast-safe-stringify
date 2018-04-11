@@ -3,12 +3,12 @@ stringify.default = stringify
 stringify.stable = deterministicStringify
 stringify.stableStringify = deterministicStringify
 
-const arr = []
+var arr = []
 
 // Regular stringify
 function stringify (obj, replacer, spacer) {
   decirc(obj, '', [], undefined)
-  const res = JSON.stringify(obj, replacer, spacer)
+  var res = JSON.stringify(obj, replacer, spacer)
   while (arr.length !== 0) {
     var part = arr.pop()
     part[0][part[1]] = part[2]
@@ -32,7 +32,7 @@ function decirc (val, k, stack, parent) {
         decirc(val[i], i, stack, val)
       }
     } else {
-      const keys = Object.keys(val)
+      var keys = Object.keys(val)
       for (i = 0; i < keys.length; i++) {
         var key = keys[i]
         decirc(val[key], key, stack, val)
@@ -54,8 +54,8 @@ function compareFunction (a, b) {
 }
 
 function deterministicStringify (obj, replacer, spacer) {
-  const tmp = deterministicDecirc(obj, '', [], undefined) || obj
-  const res = JSON.stringify(tmp, replacer, spacer)
+  var tmp = deterministicDecirc(obj, '', [], undefined) || obj
+  var res = JSON.stringify(tmp, replacer, spacer)
   while (arr.length !== 0) {
     var part = arr.pop()
     part[0][part[1]] = part[2]
@@ -84,8 +84,8 @@ function deterministicDecirc (val, k, stack, parent) {
       }
     } else {
       // Create a temporary object in the required way
-      const tmp = {}
-      const keys = Object.keys(val).sort(compareFunction)
+      var tmp = {}
+      var keys = Object.keys(val).sort(compareFunction)
       for (i = 0; i < keys.length; i++) {
         var key = keys[i]
         deterministicDecirc(val[key], key, stack, val)
