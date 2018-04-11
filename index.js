@@ -2,6 +2,7 @@ module.exports = stringify
 stringify.default = stringify
 stringify.stable = deterministicStringify
 stringify.stableStringify = deterministicStringify
+stringify.decirc = decirc
 
 const arr = []
 
