@@ -2,7 +2,7 @@ module.exports = stringify
 stringify.default = stringify
 stringify.stable = deterministicStringify
 stringify.stableStringify = deterministicStringify
-stringify.decirc = decirc
+stringify.decycle = decycle
 
 const arr = []
 
@@ -16,27 +16,37 @@ function stringify (obj, replacer, spacer) {
   }
   return res
 }
-function decirc (val, k, stack, parent) {
+
+function decycle (val, replacer) {
+  decirc(val, '', [], undefined, replacer)
+  return val
+}
+
+function defaultReplacer (val, parentKey, stack, parent) {
+  arr.push([parent, parentKey, val])
+  return '[Circular]'
+}
+
+function decirc (val, parentKey, stack, parent, replacer = defaultReplacer) {
   var i
   if (typeof val === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
-      if (stack[i] === val) {
-        parent[k] = '[Circular]'
-        arr.push([parent, k, val])
+      if (stack[i][0] === val) {
+        parent[parentKey] = replacer(val, parentKey, stack, parent)
         return
       }
     }
-    stack.push(val)
+    stack.push([val, parentKey])
     // Optimize for Arrays. Big arrays could kill the performance otherwise!
     if (Array.isArray(val)) {
       for (i = 0; i < val.length; i++) {
-        decirc(val[i], i, stack, val)
+        decirc(val[i], i, stack, val, replacer)
       }
     } else {
       const keys = Object.keys(val)
       for (i = 0; i < keys.length; i++) {
         var key = keys[i]
-        decirc(val[key], key, stack, val)
+        decirc(val[key], key, stack, val, replacer)
       }
     }
     stack.pop()

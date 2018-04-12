@@ -3,6 +3,58 @@ const fss = require('./')
 const clone = require('clone')
 const s = JSON.stringify
 
+// this custom replacer will add a json pointer $ref pointing to the referenced js object
+test('decycle supports custom replacer', function (assert) {
+  const fixture = {
+    name: 'Tywin Lannister',
+    house2: {
+      inner: {}
+    },
+    house: {
+      name: 'Lannister'
+    }
+  }
+
+  fixture.house2.inner = fixture.house
+  fixture.house.circle = fixture.house2.inner
+
+  const expected = {
+    name: 'Tywin Lannister',
+    house2: {
+      inner: {
+        name: 'Lannister',
+        circle: {
+          key: 'circle',
+          stackSize: 3,
+          parentName: 'Lannister',
+          $ref: '#/house2/inner'
+        }
+      }
+    },
+    house: {
+      name: 'Lannister',
+      circle: {
+        key: 'circle',
+        stackSize: 3,
+        parentName: 'Lannister',
+        $ref: '#/house2/inner'
+      }
+    }
+  }
+
+  const actual = fss.decycle(fixture, (val, k, stack, parent) => {
+    return {
+      key: k,
+      stackSize: stack.length,
+      parentName: parent.name,
+      $ref: `#${stack.map((s) => s[1]).join('/')}`
+    }
+  })
+
+  assert.deepEqual(actual, expected)
+  assert.end()
+})
+
 test('circular reference to root', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.circle = fixture
