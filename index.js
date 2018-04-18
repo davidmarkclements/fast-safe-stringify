@@ -27,7 +27,9 @@ function defaultReplacer (val, parentKey, stack, parent) {
   return '[Circular]'
 }
 
-function decirc (val, parentKey, stack, parent, replacer = defaultReplacer) {
+function decirc (val, parentKey, stack, parent, replacer) {
+  replacer = replacer || defaultReplacer
+
   var i
   if (typeof val === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
