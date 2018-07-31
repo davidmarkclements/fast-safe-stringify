@@ -1,4 +1,4 @@
-declare function stringify(data: any): string;
+declare function stringify(value: any, replacer?: (key: string, value: any) => any, space?: string | number): string;
 
 declare namespace stringify {
   export function stable(data: any): string;
