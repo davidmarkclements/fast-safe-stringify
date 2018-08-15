@@ -238,3 +238,78 @@ test('nested child circular reference in toJSON', function (assert) {
   assert.is(actual, expected)
   assert.end()
 })
+
+// this custom replacer will add a json pointer $ref pointing to the referenced js object
+test('decycle supports custom replacer', function (assert) {
+  const fixture = {
+    definitions: {
+      Customer: {
+        properties: {
+          partners: {
+            items: {}
+          }
+        }
+      },
+      Partner: {
+        properties: {
+          customers: {
+            items: {}
+          }
+        }
+      }
+    }
+  }
+
+  fixture.definitions.Customer.properties.partners.items = fixture.definitions.Partner
+  fixture.definitions.Partner.properties.customers.items = fixture.definitions.Customer
+
+  const expected = {
+    definitions: {
+      Customer: {
+        properties: {
+          partners: {
+            items: {
+              properties: {
+                customers: {
+                  items: {
+                    $ref: '#/definitions/Customer'
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      Partner: {
+        properties: {
+          customers: {
+            items: {
+              $ref: '#/definitions/Customer'
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const actual = fss.decycle(fixture, (val, k, stack, parent) => {
+    let $ref = '#'
+
+    for (let i = 0; i < stack.length; i++) {
+      if (stack[i][1]) {
+        $ref += `/${stack[i][1]}`
+      }
+
+      if (stack[i][0] === val) {
+        break
+      }
+    }
+
+    return {
+      $ref
+    }
+  })
+
+  assert.deepEqual(actual, expected)
+  assert.end()
+})

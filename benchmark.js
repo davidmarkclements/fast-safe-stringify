@@ -59,6 +59,33 @@ suite.add('fast-safe-stringify:   deep circular', function () {
   fastSafeStringify(deepCirc)
 })
 
+suite.add('\ndecycle:   simple object', function () {
+  fastSafeStringify.decycle(obj)
+})
+suite.add('decycle:   circular     ', function () {
+  fastSafeStringify.decycle(circ)
+})
+suite.add('decycle:   deep         ', function () {
+  fastSafeStringify.decycle(deep)
+})
+suite.add('decycle:   deep circular', function () {
+  fastSafeStringify.decycle(deepCirc)
+})
+
+const replacer = (_val, k) => k
+suite.add('\ndecycle with custom replacer:   simple object', function () {
+  fastSafeStringify.decycle(obj, replacer)
+})
+suite.add('decycle with custom replacer:   circular     ', function () {
+  fastSafeStringify.decycle(circ, replacer)
+})
+suite.add('decycle with custom replacer:   deep         ', function () {
+  fastSafeStringify.decycle(deep, replacer)
+})
+suite.add('decycle with custom replacer:   deep circular', function () {
+  fastSafeStringify.decycle(deepCirc, replacer)
+})
+
 // add listeners
 suite.on('cycle', function (event) {
   console.log(String(event.target))
