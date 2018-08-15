@@ -12,7 +12,7 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "standard && tap test.js && tap test-stable.js",
+    "test": "standard && tap test.js test-stable.js",
     "benchmark": "node benchmark.js"
   },
   "author": "David Mark Clements",
