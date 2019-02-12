@@ -135,7 +135,7 @@ function tryJSONStringify (obj) {
   try { return JSON.stringify(obj) } catch (_) {}
 }
 
-const serializedString = tryJSONStringify(deep) || stringify(deep)
+const serializedString = obj => tryJSONStringify(obj) || stringify(obj)
 ```
 
 ## Acknowledgements
