@@ -14,6 +14,21 @@ test('circular reference to root', function (assert) {
   assert.end()
 })
 
+test('circular getter reference to root', function (assert) {
+  const fixture = {
+    name: 'Tywin Lannister',
+    get circle () {
+      return fixture
+    }
+  }
+  const expected = s(
+    { name: 'Tywin Lannister', circle: '[Circular]' }
+  )
+  const actual = fss(fixture)
+  assert.is(actual, expected)
+  assert.end()
+})
+
 test('nested circular reference to root', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.id = { circle: fixture }
