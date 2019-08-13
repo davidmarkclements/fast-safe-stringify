@@ -37,6 +37,28 @@ for (let i = 0; i < 10; i++) {
   }
 }
 
+const deepCircNonCongifurableGetters = JSON.parse(JSON.stringify(deep))
+Object.defineProperty(deepCircNonCongifurableGetters.deep.deep.deep, 'circ', {
+  get: () => deepCircNonCongifurableGetters,
+  enumerable: true,
+  configurable: false
+})
+Object.defineProperty(deepCircNonCongifurableGetters.deep.deep, 'circ', {
+  get: () => deepCircNonCongifurableGetters,
+  enumerable: true,
+  configurable: false
+})
+Object.defineProperty(deepCircNonCongifurableGetters.deep, 'circ', {
+  get: () => deepCircNonCongifurableGetters,
+  enumerable: true,
+  configurable: false
+})
+Object.defineProperty(deepCircNonCongifurableGetters, 'array', {
+  get: () => array,
+  enumerable: true,
+  configurable: false
+})
+
 suite.add('util.inspect:          simple object              ', function () {
   inspect(obj, { showHidden: false, depth: null })
 })
@@ -54,6 +76,9 @@ suite.add('util.inspect:          deep circular              ', function () {
 })
 suite.add('util.inspect:          large deep circular getters', function () {
   inspect(deepCircGetters, { showHidden: false, depth: null })
+})
+suite.add('util.inspect:          deepCircNonCongifurableGetters', function () {
+  inspect(deepCircNonCongifurableGetters, { showHidden: false, depth: null })
 })
 
 suite.add('\njson-stringify-safe:   simple object              ', function () {
@@ -74,6 +99,9 @@ suite.add('json-stringify-safe:   deep circular              ', function () {
 suite.add('json-stringify-safe:   large deep circular getters', function () {
   jsonStringifySafe(deepCircGetters)
 })
+suite.add('json-stringify-safe:   deepCircNonCongifurableGetters', function () {
+  jsonStringifySafe(deepCircNonCongifurableGetters)
+})
 
 suite.add('\nfast-safe-stringify:   simple object              ', function () {
   fastSafeStringify(obj)
@@ -92,6 +120,9 @@ suite.add('fast-safe-stringify:   deep circular              ', function () {
 })
 suite.add('fast-safe-stringify:   large deep circular getters', function () {
   fastSafeStringify(deepCircGetters)
+})
+suite.add('fast-safe-stringify:   deepCircNonCongifurableGetters', function () {
+  fastSafeStringify(deepCircNonCongifurableGetters)
 })
 
 // add listeners

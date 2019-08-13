@@ -266,3 +266,17 @@ test('circular getters are restored when stringified', function (assert) {
   assert.is(fixture.circle, fixture)
   assert.end()
 })
+
+test('non-configurable circular getters use a replacer instead of markers', function (assert) {
+  const fixture = { name: 'Tywin Lannister' }
+  Object.defineProperty(fixture, 'circle', {
+    configurable: false,
+    get: function () { return fixture },
+    enumerable: true
+  })
+
+  fss(fixture)
+
+  assert.is(fixture.circle, fixture)
+  assert.end()
+})
