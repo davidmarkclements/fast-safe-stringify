@@ -37,60 +37,60 @@ for (let i = 0; i < 10; i++) {
   }
 }
 
-suite.add('util.inspect:          simple object            ', function () {
+suite.add('util.inspect:          simple object              ', function () {
   inspect(obj, { showHidden: false, depth: null })
 })
-suite.add('util.inspect:          circular                 ', function () {
+suite.add('util.inspect:          circular                   ', function () {
   inspect(circ, { showHidden: false, depth: null })
 })
-suite.add('util.inspect:          circular getters         ', function () {
+suite.add('util.inspect:          circular getters           ', function () {
   inspect(circGetters, { showHidden: false, depth: null })
 })
-suite.add('util.inspect:          deep                     ', function () {
+suite.add('util.inspect:          deep                       ', function () {
   inspect(deep, { showHidden: false, depth: null })
 })
-suite.add('util.inspect:          deep circular            ', function () {
+suite.add('util.inspect:          deep circular              ', function () {
   inspect(deepCirc, { showHidden: false, depth: null })
 })
-suite.add('util.inspect:          10+ deep circular getters', function () {
+suite.add('util.inspect:          large deep circular getters', function () {
   inspect(deepCircGetters, { showHidden: false, depth: null })
 })
 
-suite.add('\njson-stringify-safe:   simple object            ', function () {
+suite.add('\njson-stringify-safe:   simple object              ', function () {
   jsonStringifySafe(obj)
 })
-suite.add('json-stringify-safe:   circular                 ', function () {
+suite.add('json-stringify-safe:   circular                   ', function () {
   jsonStringifySafe(circ)
 })
-suite.add('json-stringify-safe:   circular getters         ', function () {
+suite.add('json-stringify-safe:   circular getters           ', function () {
   jsonStringifySafe(circGetters)
 })
-suite.add('json-stringify-safe:   deep                     ', function () {
+suite.add('json-stringify-safe:   deep                       ', function () {
   jsonStringifySafe(deep)
 })
-suite.add('json-stringify-safe:   deep circular            ', function () {
+suite.add('json-stringify-safe:   deep circular              ', function () {
   jsonStringifySafe(deepCirc)
 })
-suite.add('json-stringify-safe:   10+ deep circular getters', function () {
+suite.add('json-stringify-safe:   large deep circular getters', function () {
   jsonStringifySafe(deepCircGetters)
 })
 
-suite.add('\nfast-safe-stringify:   simple object            ', function () {
+suite.add('\nfast-safe-stringify:   simple object              ', function () {
   fastSafeStringify(obj)
 })
-suite.add('fast-safe-stringify:   circular                 ', function () {
+suite.add('fast-safe-stringify:   circular                   ', function () {
   fastSafeStringify(circ)
 })
-suite.add('fast-safe-stringify:   circular getters         ', function () {
+suite.add('fast-safe-stringify:   circular getters           ', function () {
   fastSafeStringify(circGetters)
 })
-suite.add('fast-safe-stringify:   deep                     ', function () {
+suite.add('fast-safe-stringify:   deep                       ', function () {
   fastSafeStringify(deep)
 })
-suite.add('fast-safe-stringify:   deep circular            ', function () {
+suite.add('fast-safe-stringify:   deep circular              ', function () {
   fastSafeStringify(deepCirc)
 })
-suite.add('fast-safe-stringify:   10+ deep circular getters', function () {
+suite.add('fast-safe-stringify:   large deep circular getters', function () {
   fastSafeStringify(deepCircGetters)
 })
 
