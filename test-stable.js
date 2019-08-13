@@ -260,3 +260,16 @@ test('nested child circular reference in toJSON', function (assert) {
   assert.is(actual, expected)
   assert.end()
 })
+
+test('circular getters are restored when stringified', function (assert) {
+  const fixture = {
+    name: 'Tywin Lannister',
+    get circle () {
+      return fixture
+    }
+  }
+  fss(fixture)
+
+  assert.is(fixture.circle, fixture)
+  assert.end()
+})

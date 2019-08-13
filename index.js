@@ -11,7 +11,11 @@ function stringify (obj, replacer, spacer) {
   var res = JSON.stringify(obj, replacer, spacer)
   while (arr.length !== 0) {
     var part = arr.pop()
-    part[0][part[1]] = part[2]
+    if (part.length === 4) {
+      Object.defineProperty(part[0], part[1], part[3])
+    } else {
+      part[0][part[1]] = part[2]
+    }
   }
   return res
 }
@@ -20,12 +24,14 @@ function decirc (val, k, stack, parent) {
   if (typeof val === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
-        if (Object.getOwnPropertyDescriptor(parent, k).get !== undefined) {
+        const propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
+        if (propertyDescriptor.get !== undefined) {
           Object.defineProperty(parent, k, { value: '[Circular]' })
+          arr.push([parent, k, val, propertyDescriptor])
         } else {
           parent[k] = '[Circular]'
+          arr.push([parent, k, val])
         }
-        arr.push([parent, k, val])
         return
       }
     }
@@ -62,7 +68,11 @@ function deterministicStringify (obj, replacer, spacer) {
   var res = JSON.stringify(tmp, replacer, spacer)
   while (arr.length !== 0) {
     var part = arr.pop()
-    part[0][part[1]] = part[2]
+    if (part.length === 4) {
+      Object.defineProperty(part[0], part[1], part[3])
+    } else {
+      part[0][part[1]] = part[2]
+    }
   }
   return res
 }
@@ -72,12 +82,14 @@ function deterministicDecirc (val, k, stack, parent) {
   if (typeof val === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
-        if (Object.getOwnPropertyDescriptor(parent, k).get !== undefined) {
+        const propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
+        if (propertyDescriptor.get !== undefined) {
           Object.defineProperty(parent, k, { value: '[Circular]' })
+          arr.push([parent, k, val, propertyDescriptor])
         } else {
           parent[k] = '[Circular]'
+          arr.push([parent, k, val])
         }
-        arr.push([parent, k, val])
         return
       }
     }
