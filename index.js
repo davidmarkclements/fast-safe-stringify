@@ -20,10 +20,11 @@ function decirc (val, k, stack, parent) {
   if (typeof val === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
-        if (typeof Object.getOwnPropertyDescriptor(parent, k).get === 'function') {
-          delete parent[k]
+        if (Object.getOwnPropertyDescriptor(parent, k).get !== undefined) {
+          Object.defineProperty(parent, k, { value: '[Circular]' })
+        } else {
+          parent[k] = '[Circular]'
         }
-        parent[k] = '[Circular]'
         arr.push([parent, k, val])
         return
       }
@@ -71,7 +72,11 @@ function deterministicDecirc (val, k, stack, parent) {
   if (typeof val === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
-        parent[k] = '[Circular]'
+        if (Object.getOwnPropertyDescriptor(parent, k).get !== undefined) {
+          Object.defineProperty(parent, k, { value: '[Circular]' })
+        } else {
+          parent[k] = '[Circular]'
+        }
         arr.push([parent, k, val])
         return
       }
