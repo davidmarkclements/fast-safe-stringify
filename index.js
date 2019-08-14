@@ -31,7 +31,7 @@ function decirc (val, k, stack, parent) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
         // Note: This doesn't handle circular sub-objects of non-configurable getters...
-        const propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
+        var propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
         if (propertyDescriptor.get !== undefined) {
           if (propertyDescriptor.configurable) {
             Object.defineProperty(parent, k, { value: '[Circular]' })
@@ -99,7 +99,7 @@ function deterministicDecirc (val, k, stack, parent) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
         // Note: This doesn't handle circular sub-objects of non-configurable getters...
-        const propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
+        var propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
         if (propertyDescriptor.get !== undefined) {
           if (propertyDescriptor.configurable) {
             Object.defineProperty(parent, k, { value: '[Circular]' })
@@ -149,8 +149,8 @@ function handleNonConfigurableGetters (replacer) {
   replacer = replacer !== undefined ? replacer : (k, v) => v
   return function (key, val) {
     if (nonConfigurables.length > 0) {
-      for (let i = 0; i < nonConfigurables.length; i++) {
-        const part = nonConfigurables[i]
+      for (var i = 0; i < nonConfigurables.length; i++) {
+        var part = nonConfigurables[i]
         // This references the parent object being stringified
         if (part[1] === key && part[0] === this) {
           val = '[Circular]'
