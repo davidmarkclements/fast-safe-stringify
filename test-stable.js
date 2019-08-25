@@ -287,3 +287,25 @@ test('non-configurable circular getters use a replacer instead of markers', func
   assert.is(fixture.circle, fixture)
   assert.end()
 })
+
+test('getter child circular reference', function (assert) {
+  const fixture = {
+    name: 'Tywin Lannister',
+    child: {
+      name: 'Tyrion Lannister',
+      get dinklage () { return fixture.child }
+    },
+    get self () { return fixture }
+  }
+
+  const expected = s({
+    child: {
+      dinklage: '[Circular]', name: 'Tyrion Lannister'
+    },
+    name: 'Tywin Lannister',
+    self: '[Circular]'
+  })
+  const actual = fss(fixture)
+  assert.is(actual, expected)
+  assert.end()
+})
