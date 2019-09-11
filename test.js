@@ -14,6 +14,21 @@ test('circular reference to root', function (assert) {
   assert.end()
 })
 
+test('circular getter reference to root', function (assert) {
+  const fixture = {
+    name: 'Tywin Lannister',
+    get circle () {
+      return fixture
+    }
+  }
+  const expected = s(
+    { name: 'Tywin Lannister', circle: '[Circular]' }
+  )
+  const actual = fss(fixture)
+  assert.is(actual, expected)
+  assert.end()
+})
+
 test('nested circular reference to root', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.id = { circle: fixture }
@@ -235,6 +250,55 @@ test('nested child circular reference in toJSON', function (assert) {
     }
   })
   const actual = fss(o)
+  assert.is(actual, expected)
+  assert.end()
+})
+
+test('circular getters are restored when stringified', function (assert) {
+  const fixture = {
+    name: 'Tywin Lannister',
+    get circle () {
+      return fixture
+    }
+  }
+  fss(fixture)
+
+  assert.is(fixture.circle, fixture)
+  assert.end()
+})
+
+test('non-configurable circular getters use a replacer instead of markers', function (assert) {
+  const fixture = { name: 'Tywin Lannister' }
+  Object.defineProperty(fixture, 'circle', {
+    configurable: false,
+    get: function () { return fixture },
+    enumerable: true
+  })
+
+  fss(fixture)
+
+  assert.is(fixture.circle, fixture)
+  assert.end()
+})
+
+test('getter child circular reference are replaced instead of marked', function (assert) {
+  const fixture = {
+    name: 'Tywin Lannister',
+    child: {
+      name: 'Tyrion Lannister',
+      get dinklage () { return fixture.child }
+    },
+    get self () { return fixture }
+  }
+
+  const expected = s({
+    name: 'Tywin Lannister',
+    child: {
+      name: 'Tyrion Lannister', dinklage: '[Circular]'
+    },
+    self: '[Circular]'
+  })
+  const actual = fss(fixture)
   assert.is(actual, expected)
   assert.end()
 })
