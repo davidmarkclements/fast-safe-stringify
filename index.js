@@ -8,7 +8,7 @@ var replacerStack = []
 
 // Regular stringify
 function stringify (obj, replacer, spacer) {
-  decirc(obj, '', [], undefined)
+  jsonSafe(obj, '', [], undefined)
   var res
   if (replacerStack.length === 0) {
     res = JSON.stringify(obj, replacer, spacer)
@@ -25,23 +25,14 @@ function stringify (obj, replacer, spacer) {
   }
   return res
 }
-function decirc (val, k, stack, parent) {
+function jsonSafe (val, k, stack, parent) {
   var i
-  if (typeof val === 'object' && val !== null) {
+  var type = typeof val
+
+  if (type === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
-        var propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
-        if (propertyDescriptor.get !== undefined) {
-          if (propertyDescriptor.configurable) {
-            Object.defineProperty(parent, k, { value: '[Circular]' })
-            arr.push([parent, k, val, propertyDescriptor])
-          } else {
-            replacerStack.push([val, k])
-          }
-        } else {
-          parent[k] = '[Circular]'
-          arr.push([parent, k, val])
-        }
+        replaceProperty(parent, k, val, '[Circular]', type)
         return
       }
     }
@@ -49,16 +40,18 @@ function decirc (val, k, stack, parent) {
     // Optimize for Arrays. Big arrays could kill the performance otherwise!
     if (Array.isArray(val)) {
       for (i = 0; i < val.length; i++) {
-        decirc(val[i], i, stack, val)
+        jsonSafe(val[i], i, stack, val)
       }
     } else {
       var keys = Object.keys(val)
       for (i = 0; i < keys.length; i++) {
         var key = keys[i]
-        decirc(val[key], key, stack, val)
+        jsonSafe(val[key], key, stack, val)
       }
     }
     stack.pop()
+  } else if (type === 'bigint') {
+    replaceProperty(parent, k, val, val.toString(), type)
   }
 }
 
@@ -74,7 +67,7 @@ function compareFunction (a, b) {
 }
 
 function deterministicStringify (obj, replacer, spacer) {
-  var tmp = deterministicDecirc(obj, '', [], undefined) || obj
+  var tmp = deterministicJsonSafe(obj, '', [], undefined) || obj
   var res
   if (replacerStack.length === 0) {
     res = JSON.stringify(tmp, replacer, spacer)
@@ -92,23 +85,14 @@ function deterministicStringify (obj, replacer, spacer) {
   return res
 }
 
-function deterministicDecirc (val, k, stack, parent) {
+function deterministicJsonSafe (val, k, stack, parent) {
   var i
-  if (typeof val === 'object' && val !== null) {
+  var type = typeof val
+
+  if (type === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
-        var propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
-        if (propertyDescriptor.get !== undefined) {
-          if (propertyDescriptor.configurable) {
-            Object.defineProperty(parent, k, { value: '[Circular]' })
-            arr.push([parent, k, val, propertyDescriptor])
-          } else {
-            replacerStack.push([val, k])
-          }
-        } else {
-          parent[k] = '[Circular]'
-          arr.push([parent, k, val])
-        }
+        replaceProperty(parent, k, val, '[Circular]', type)
         return
       }
     }
@@ -119,7 +103,7 @@ function deterministicDecirc (val, k, stack, parent) {
     // Optimize for Arrays. Big arrays could kill the performance otherwise!
     if (Array.isArray(val)) {
       for (i = 0; i < val.length; i++) {
-        deterministicDecirc(val[i], i, stack, val)
+        deterministicJsonSafe(val[i], i, stack, val)
       }
     } else {
       // Create a temporary object in the required way
@@ -127,7 +111,7 @@ function deterministicDecirc (val, k, stack, parent) {
       var keys = Object.keys(val).sort(compareFunction)
       for (i = 0; i < keys.length; i++) {
         var key = keys[i]
-        deterministicDecirc(val[key], key, stack, val)
+        deterministicJsonSafe(val[key], key, stack, val)
         tmp[key] = val[key]
       }
       if (parent !== undefined) {
@@ -138,6 +122,23 @@ function deterministicDecirc (val, k, stack, parent) {
       }
     }
     stack.pop()
+  } else if (type === 'bigint') {
+    replaceProperty(parent, k, val, val.toString(), type)
+  }
+}
+
+function replaceProperty (parent, k, val, cVal, type) {
+  var propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
+  if (propertyDescriptor.get !== undefined) {
+    if (propertyDescriptor.configurable) {
+      Object.defineProperty(parent, k, { value: cVal })
+      arr.push([parent, k, val, propertyDescriptor])
+    } else {
+      replacerStack.push([val, k, type])
+    }
+  } else {
+    parent[k] = cVal
+    arr.push([parent, k, val])
   }
 }
 
@@ -150,7 +151,13 @@ function replaceGetterValues (replacer) {
       for (var i = 0; i < replacerStack.length; i++) {
         var part = replacerStack[i]
         if (part[1] === key && part[0] === val) {
-          val = '[Circular]'
+          switch (part[2]) {
+            case 'bigint':
+              val = val.toString()
+              break
+            default:
+              val = '[Circular]'
+          }
           replacerStack.splice(i, 1)
           break
         }

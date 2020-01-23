@@ -3,6 +3,9 @@ const fss = require('./').stable
 const clone = require('clone')
 const s = JSON.stringify
 
+// "polyfill" BigInt for standard and node < 10.4
+var BigInt = global.BigInt || function BigInt (value) { return value }
+
 test('circular reference to root', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.circle = fixture
@@ -305,6 +308,33 @@ test('getter child circular reference', function (assert) {
     name: 'Tywin Lannister',
     self: '[Circular]'
   })
+  const actual = fss(fixture)
+  assert.is(actual, expected)
+  assert.end()
+})
+
+test('bigint should be serialized to string', function (assert) {
+  const fixture = { name: 'Tywin Lannister', age: BigInt('62') }
+  const expected = s(
+    { age: '62', name: 'Tywin Lannister' }
+  )
+  const actual = fss(fixture)
+  assert.is(actual, expected)
+  assert.end()
+})
+
+test('non-configurable bigint getters use a replacer', function (assert) {
+  const fixture = { name: 'Tywin Lannister' }
+  Object.defineProperty(fixture, 'age', {
+    configurable: false,
+    get: function () { return BigInt('62') },
+    enumerable: true
+  })
+
+  const expected = s(
+    { age: '62', name: 'Tywin Lannister' }
+  )
+
   const actual = fss(fixture)
   assert.is(actual, expected)
   assert.end()
