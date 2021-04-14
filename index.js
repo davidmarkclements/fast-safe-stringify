@@ -49,7 +49,9 @@ function decirc (val, k, stack, parent) {
     // Optimize for Arrays. Big arrays could kill the performance otherwise!
     if (Array.isArray(val)) {
       for (i = 0; i < val.length; i++) {
+        stack.push(val[i])
         decirc(val[i], i, stack, val)
+        stack.pop()
       }
     } else {
       var keys = Object.keys(val)
