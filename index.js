@@ -3,12 +3,26 @@ stringify.default = stringify
 stringify.stable = deterministicStringify
 stringify.stableStringify = deterministicStringify
 
+var LIMIT_REPLACE_NODE = '...'
+var CIRCULAR_REPLACE_NODE = '[Circular]'
+
 var arr = []
 var replacerStack = []
 
+function defaultOptions () {
+  return {
+    depthLimit: 10,
+    edgesLimit: 20
+  }
+}
+
 // Regular stringify
-function stringify (obj, replacer, spacer) {
-  decirc(obj, '', [], undefined)
+function stringify (obj, replacer, spacer, options) {
+  if (typeof options === 'undefined') {
+    options = defaultOptions()
+  }
+
+  decirc(obj, '', 0, [], undefined, 0, options)
   var res
   if (replacerStack.length === 0) {
     res = JSON.stringify(obj, replacer, spacer)
@@ -25,37 +39,60 @@ function stringify (obj, replacer, spacer) {
   }
   return res
 }
-function decirc (val, k, stack, parent) {
+
+function setReplace (replace, val, k, parent) {
+  var propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
+  if (propertyDescriptor.get !== undefined) {
+    if (propertyDescriptor.configurable) {
+      Object.defineProperty(parent, k, { value: replace })
+      arr.push([parent, k, val, propertyDescriptor])
+    } else {
+      replacerStack.push([val, k, replace])
+    }
+  } else {
+    parent[k] = replace
+    arr.push([parent, k, val])
+  }
+}
+
+function decirc (val, k, edgeIndex, stack, parent, depth, options) {
+  depth += 1
   var i
   if (typeof val === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
-        var propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
-        if (propertyDescriptor.get !== undefined) {
-          if (propertyDescriptor.configurable) {
-            Object.defineProperty(parent, k, { value: '[Circular]' })
-            arr.push([parent, k, val, propertyDescriptor])
-          } else {
-            replacerStack.push([val, k])
-          }
-        } else {
-          parent[k] = '[Circular]'
-          arr.push([parent, k, val])
-        }
+        setReplace(CIRCULAR_REPLACE_NODE, val, k, parent)
         return
       }
     }
+
+    if (
+      typeof options.depthLimit !== 'undefined' &&
+      depth > options.depthLimit
+    ) {
+      setReplace(LIMIT_REPLACE_NODE, val, k, parent)
+      return
+    }
+
+    if (
+      typeof options.edgesLimit !== 'undefined' &&
+      edgeIndex > options.edgeLimit
+    ) {
+      setReplace(LIMIT_REPLACE_NODE, val, k, parent)
+      return
+    }
+
     stack.push(val)
     // Optimize for Arrays. Big arrays could kill the performance otherwise!
     if (Array.isArray(val)) {
       for (i = 0; i < val.length; i++) {
-        decirc(val[i], i, stack, val)
+        decirc(val[i], i, i, stack, val, depth, options)
       }
     } else {
       var keys = Object.keys(val)
       for (i = 0; i < keys.length; i++) {
         var key = keys[i]
-        decirc(val[key], key, stack, val)
+        decirc(val[key], key, i, stack, val, depth, options)
       }
     }
     stack.pop()
@@ -73,8 +110,12 @@ function compareFunction (a, b) {
   return 0
 }
 
-function deterministicStringify (obj, replacer, spacer) {
-  var tmp = deterministicDecirc(obj, '', [], undefined) || obj
+function deterministicStringify (obj, replacer, spacer, options) {
+  if (typeof options === 'undefined') {
+    options = defaultOptions()
+  }
+
+  var tmp = deterministicDecirc(obj, '', 0, [], undefined, 0, options) || obj
   var res
   if (replacerStack.length === 0) {
     res = JSON.stringify(tmp, replacer, spacer)
@@ -92,34 +133,42 @@ function deterministicStringify (obj, replacer, spacer) {
   return res
 }
 
-function deterministicDecirc (val, k, stack, parent) {
+function deterministicDecirc (val, k, edgeIndex, stack, parent, depth, options) {
+  depth += 1
   var i
   if (typeof val === 'object' && val !== null) {
     for (i = 0; i < stack.length; i++) {
       if (stack[i] === val) {
-        var propertyDescriptor = Object.getOwnPropertyDescriptor(parent, k)
-        if (propertyDescriptor.get !== undefined) {
-          if (propertyDescriptor.configurable) {
-            Object.defineProperty(parent, k, { value: '[Circular]' })
-            arr.push([parent, k, val, propertyDescriptor])
-          } else {
-            replacerStack.push([val, k])
-          }
-        } else {
-          parent[k] = '[Circular]'
-          arr.push([parent, k, val])
-        }
+        setReplace(CIRCULAR_REPLACE_NODE, val, k, parent)
         return
       }
     }
+
     if (typeof val.toJSON === 'function') {
       return
     }
+
+    if (
+      typeof options.depthLimit !== 'undefined' &&
+      depth > options.depthLimit
+    ) {
+      setReplace(LIMIT_REPLACE_NODE, val, k, parent)
+      return
+    }
+
+    if (
+      typeof options.edgesLimit !== 'undefined' &&
+      edgeIndex > options.edgeLimit
+    ) {
+      setReplace(LIMIT_REPLACE_NODE, val, k, parent)
+      return
+    }
+
     stack.push(val)
     // Optimize for Arrays. Big arrays could kill the performance otherwise!
     if (Array.isArray(val)) {
       for (i = 0; i < val.length; i++) {
-        deterministicDecirc(val[i], i, stack, val)
+        deterministicDecirc(val[i], i, i, stack, val, depth, options)
       }
     } else {
       // Create a temporary object in the required way
@@ -127,10 +176,10 @@ function deterministicDecirc (val, k, stack, parent) {
       var keys = Object.keys(val).sort(compareFunction)
       for (i = 0; i < keys.length; i++) {
         var key = keys[i]
-        deterministicDecirc(val[key], key, stack, val)
+        deterministicDecirc(val[key], key, i, stack, val, depth, options)
         tmp[key] = val[key]
       }
-      if (parent !== undefined) {
+      if (typeof parent !== 'undefined') {
         arr.push([parent, k, val])
         parent[k] = tmp
       } else {
@@ -142,15 +191,20 @@ function deterministicDecirc (val, k, stack, parent) {
 }
 
 // wraps replacer function to handle values we couldn't replace
-// and mark them as [Circular]
+// and mark them as replaced value
 function replaceGetterValues (replacer) {
-  replacer = replacer !== undefined ? replacer : function (k, v) { return v }
+  replacer =
+    typeof replacer !== 'undefined'
+      ? replacer
+      : function (k, v) {
+        return v
+      }
   return function (key, val) {
     if (replacerStack.length > 0) {
       for (var i = 0; i < replacerStack.length; i++) {
         var part = replacerStack[i]
         if (part[1] === key && part[0] === val) {
-          val = '[Circular]'
+          val = part[2]
           replacerStack.splice(i, 1)
           break
         }
