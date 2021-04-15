@@ -3,7 +3,7 @@ stringify.default = stringify
 stringify.stable = deterministicStringify
 stringify.stableStringify = deterministicStringify
 
-var LIMIT_REPLACE_NODE = '...'
+var LIMIT_REPLACE_NODE = '[...]'
 var CIRCULAR_REPLACE_NODE = '[Circular]'
 
 var arr = []
@@ -76,7 +76,7 @@ function decirc (val, k, edgeIndex, stack, parent, depth, options) {
 
     if (
       typeof options.edgesLimit !== 'undefined' &&
-      edgeIndex > options.edgeLimit
+      edgeIndex + 1 > options.edgesLimit
     ) {
       setReplace(LIMIT_REPLACE_NODE, val, k, parent)
       return
@@ -158,7 +158,7 @@ function deterministicDecirc (val, k, edgeIndex, stack, parent, depth, options) 
 
     if (
       typeof options.edgesLimit !== 'undefined' &&
-      edgeIndex > options.edgeLimit
+      edgeIndex + 1 > options.edgesLimit
     ) {
       setReplace(LIMIT_REPLACE_NODE, val, k, parent)
       return
