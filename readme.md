@@ -13,7 +13,7 @@ handle circular structures. See the example below for further information.
 
 The same as [JSON.stringify][].
 
-`stringify(value[, replacer[, space]])`
+`stringify(value[, replacer[, space[, options]]])`
 
 ```js
 const safeStringify = require('fast-safe-stringify')
@@ -33,7 +33,14 @@ function replacer(key, value) {
   }
   return value
 }
-const serialized = safeStringify(o, replacer, 2)
+
+// those are also defaults limits when no options object is passed into safeStringify
+const options = {
+  depthLimit: 10,
+  edgesLimit: 20,
+};
+
+const serialized = safeStringify(o, replacer, 2, options)
 // Key: "" Value: {"a":1,"o":"[Circular]"}
 // Key: "a" Value: 1
 // Key: "o" Value: "[Circular]"
@@ -42,6 +49,7 @@ console.log(serialized)
 //  "a": 1
 // }
 ```
+
 
 Using the deterministic version also works the same:
 
@@ -61,6 +69,11 @@ console.log(JSON.stringify(o))
 A faster and side-effect free implementation is available in the
 [safe-stable-stringify][] module. However it is still considered experimental
 due to a new and more complex implementation.
+
+### Replace strings constants
+
+- `[Circular]` - when same reference is found
+- `[...]` - when some limit from options object is reached
 
 ## Differences to JSON.stringify
 
