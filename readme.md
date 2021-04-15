@@ -11,31 +11,37 @@ handle circular structures. See the example below for further information.
 
 The same as [JSON.stringify][].
 
-`stringify(value[, replacer[, space]])`
+`stringify(value[, replacer[, space[, options]]])`
 
 ```js
-const safeStringify = require('fast-safe-stringify')
-const o = { a: 1 }
-o.o = o
+const safeStringify = require("fast-safe-stringify");
+const o = { a: 1 };
+o.o = o;
 
-console.log(safeStringify(o))
+console.log(safeStringify(o));
 // '{"a":1,"o":"[Circular]"}'
-console.log(JSON.stringify(o))
+console.log(JSON.stringify(o));
 // TypeError: Converting circular structure to JSON
 
 function replacer(key, value) {
-  console.log('Key:', JSON.stringify(key), 'Value:', JSON.stringify(value))
+  console.log("Key:", JSON.stringify(key), "Value:", JSON.stringify(value));
   // Remove the circular structure
-  if (value === '[Circular]') {
-    return
+  if (value === "[Circular]") {
+    return;
   }
-  return value
+  return value;
 }
-const serialized = safeStringify(o, replacer, 2)
+// those are also defaults limits when no options object is passed into safeStringify
+const options = {
+  depthLimit: 10,
+  edgesLimit: 20,
+};
+
+const serialized = safeStringify(o, replacer, 2, options);
 // Key: "" Value: {"a":1,"o":"[Circular]"}
 // Key: "a" Value: 1
 // Key: "o" Value: "[Circular]"
-console.log(serialized)
+console.log(serialized);
 // {
 //  "a": 1
 // }
@@ -44,21 +50,26 @@ console.log(serialized)
 Using the deterministic version also works the same:
 
 ```js
-const safeStringify = require('fast-safe-stringify')
-const o = { b: 1, a: 0 }
-o.o = o
+const safeStringify = require("fast-safe-stringify");
+const o = { b: 1, a: 0 };
+o.o = o;
 
-console.log(safeStringify(o))
+console.log(safeStringify(o));
 // '{"b":1,"a":0,"o":"[Circular]"}'
-console.log(safeStringify.stableStringify(o))
+console.log(safeStringify.stableStringify(o));
 // '{"a":0,"b":1,"o":"[Circular]"}'
-console.log(JSON.stringify(o))
+console.log(JSON.stringify(o));
 // TypeError: Converting circular structure to JSON
 ```
 
 A faster and side-effect free implementation is available in the
 [safe-stable-stringify][] module. However it is still considered experimental
 due to a new and more complex implementation.
+
+### Replace strings constants
+
+- `[Circular]` - when same reference is found
+- `[...]` - when some limit from options object is reached
 
 ## Differences to JSON.stringify
 
@@ -101,20 +112,20 @@ Here we compare `fast-safe-stringify` with some alternatives:
 (Lenovo T450s with a i7-5600U CPU using Node.js 8.9.4)
 
 ```md
-fast-safe-stringify:   simple object x 1,121,497 ops/sec ±0.75% (97 runs sampled)
-fast-safe-stringify:   circular      x 560,126 ops/sec ±0.64% (96 runs sampled)
-fast-safe-stringify:   deep          x 32,472 ops/sec ±0.57% (95 runs sampled)
-fast-safe-stringify:   deep circular x 32,513 ops/sec ±0.80% (92 runs sampled)
+fast-safe-stringify: simple object x 1,121,497 ops/sec ±0.75% (97 runs sampled)
+fast-safe-stringify: circular x 560,126 ops/sec ±0.64% (96 runs sampled)
+fast-safe-stringify: deep x 32,472 ops/sec ±0.57% (95 runs sampled)
+fast-safe-stringify: deep circular x 32,513 ops/sec ±0.80% (92 runs sampled)
 
-util.inspect:          simple object x 272,837 ops/sec ±1.48% (90 runs sampled)
-util.inspect:          circular      x 116,896 ops/sec ±1.19% (95 runs sampled)
-util.inspect:          deep          x 19,382 ops/sec ±0.66% (92 runs sampled)
-util.inspect:          deep circular x 18,717 ops/sec ±0.63% (96 runs sampled)
+util.inspect: simple object x 272,837 ops/sec ±1.48% (90 runs sampled)
+util.inspect: circular x 116,896 ops/sec ±1.19% (95 runs sampled)
+util.inspect: deep x 19,382 ops/sec ±0.66% (92 runs sampled)
+util.inspect: deep circular x 18,717 ops/sec ±0.63% (96 runs sampled)
 
-json-stringify-safe:   simple object x 233,621 ops/sec ±0.97% (94 runs sampled)
-json-stringify-safe:   circular      x 110,409 ops/sec ±1.85% (95 runs sampled)
-json-stringify-safe:   deep          x 8,705 ops/sec ±0.87% (96 runs sampled)
-json-stringify-safe:   deep circular x 8,336 ops/sec ±2.20% (93 runs sampled)
+json-stringify-safe: simple object x 233,621 ops/sec ±0.97% (94 runs sampled)
+json-stringify-safe: circular x 110,409 ops/sec ±1.85% (95 runs sampled)
+json-stringify-safe: deep x 8,705 ops/sec ±0.87% (96 runs sampled)
+json-stringify-safe: deep circular x 8,336 ops/sec ±2.20% (93 runs sampled)
 ```
 
 For stable stringify comparisons, see the performance benchmarks in the
@@ -129,13 +140,15 @@ Shallow or one level nested objects on the other hand will slow down with it.
 It is entirely dependant on the use case.
 
 ```js
-const stringify = require('fast-safe-stringify')
+const stringify = require("fast-safe-stringify");
 
-function tryJSONStringify (obj) {
-  try { return JSON.stringify(obj) } catch (_) {}
+function tryJSONStringify(obj) {
+  try {
+    return JSON.stringify(obj);
+  } catch (_) {}
 }
 
-const serializedString = tryJSONStringify(deep) || stringify(deep)
+const serializedString = tryJSONStringify(deep) || stringify(deep);
 ```
 
 ## Acknowledgements
@@ -149,6 +162,6 @@ MIT
 [`replacer`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The%20replacer%20parameter
 [`safe-stable-stringify`]: https://github.com/BridgeAR/safe-stable-stringify
 [`space`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The%20space%20argument
-[`toJSON`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior
+[`tojson`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior
 [benchmark]: https://github.com/epoberezkin/fast-json-stable-stringify/blob/67f688f7441010cfef91a6147280cc501701e83b/benchmark
-[JSON.stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+[json.stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify

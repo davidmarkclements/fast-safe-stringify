@@ -1,5 +1,13 @@
 # Changelog
 
+## v.2.1.0
+
+Features
+
+- Added optional parameter options - depthLimit and edgesLimit
+- Added default options.depthLimit 10
+- Added default options.edgesLimit 20
+
 ## v.2.0.0
 
 Features
