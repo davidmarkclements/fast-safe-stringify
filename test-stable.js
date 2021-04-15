@@ -6,9 +6,7 @@ const s = JSON.stringify
 test('circular reference to root', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.circle = fixture
-  const expected = s(
-    { circle: '[Circular]', name: 'Tywin Lannister' }
-  )
+  const expected = s({ circle: '[Circular]', name: 'Tywin Lannister' })
   const actual = fss(fixture)
   assert.is(actual, expected)
   assert.end()
@@ -22,9 +20,7 @@ test('circular getter reference to root', function (assert) {
     }
   }
 
-  const expected = s(
-    { circle: '[Circular]', name: 'Tywin Lannister' }
-  )
+  const expected = s({ circle: '[Circular]', name: 'Tywin Lannister' })
   const actual = fss(fixture)
   assert.is(actual, expected)
   assert.end()
@@ -33,20 +29,22 @@ test('circular getter reference to root', function (assert) {
 test('nested circular reference to root', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.id = { circle: fixture }
-  const expected = s(
-    { id: { circle: '[Circular]' }, name: 'Tywin Lannister' }
-  )
+  const expected = s({ id: { circle: '[Circular]' }, name: 'Tywin Lannister' })
   const actual = fss(fixture)
   assert.is(actual, expected)
   assert.end()
 })
 
 test('child circular reference', function (assert) {
-  const fixture = { name: 'Tywin Lannister', child: { name: 'Tyrion Lannister' } }
+  const fixture = {
+    name: 'Tywin Lannister',
+    child: { name: 'Tyrion Lannister' }
+  }
   fixture.child.dinklage = fixture.child
   const expected = s({
     child: {
-      dinklage: '[Circular]', name: 'Tyrion Lannister'
+      dinklage: '[Circular]',
+      name: 'Tyrion Lannister'
     },
     name: 'Tywin Lannister'
   })
@@ -56,11 +54,15 @@ test('child circular reference', function (assert) {
 })
 
 test('nested child circular reference', function (assert) {
-  const fixture = { name: 'Tywin Lannister', child: { name: 'Tyrion Lannister' } }
+  const fixture = {
+    name: 'Tywin Lannister',
+    child: { name: 'Tyrion Lannister' }
+  }
   fixture.child.actor = { dinklage: fixture.child }
   const expected = s({
     child: {
-      actor: { dinklage: '[Circular]' }, name: 'Tyrion Lannister'
+      actor: { dinklage: '[Circular]' },
+      name: 'Tyrion Lannister'
     },
     name: 'Tywin Lannister'
   })
@@ -73,7 +75,8 @@ test('circular objects in an array', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
   fixture.hand = [fixture, fixture]
   const expected = s({
-    hand: ['[Circular]', '[Circular]'], name: 'Tywin Lannister'
+    hand: ['[Circular]', '[Circular]'],
+    name: 'Tywin Lannister'
   })
   const actual = fss(fixture)
   assert.is(actual, expected)
@@ -155,10 +158,12 @@ test('double child circular reference', function (assert) {
   const cloned = clone(fixture)
   const expected = s({
     childA: {
-      dinklage: '[Circular]', name: 'Tyrion Lannister'
+      dinklage: '[Circular]',
+      name: 'Tyrion Lannister'
     },
     childB: {
-      dinklage: '[Circular]', name: 'Tyrion Lannister'
+      dinklage: '[Circular]',
+      name: 'Tyrion Lannister'
     },
     name: 'Tywin Lannister'
   })
@@ -172,7 +177,9 @@ test('double child circular reference', function (assert) {
 
 test('child circular reference with toJSON', function (assert) {
   // Create a test object that has an overriden `toJSON` property
-  TestObject.prototype.toJSON = function () { return { special: 'case' } }
+  TestObject.prototype.toJSON = function () {
+    return { special: 'case' }
+  }
   function TestObject (content) {}
 
   // Creating a simple circular object structure
@@ -187,7 +194,10 @@ test('child circular reference with toJSON', function (assert) {
 
   // Making sure our original tests work
   assert.deepEqual(parentObject.childObject.parentObject, parentObject)
-  assert.deepEqual(otherParentObject.otherChildObject.otherParentObject, otherParentObject)
+  assert.deepEqual(
+    otherParentObject.otherChildObject.otherParentObject,
+    otherParentObject
+  )
 
   // Should both be idempotent
   assert.equal(fss(parentObject), '{"childObject":{"special":"case"}}')
@@ -195,7 +205,10 @@ test('child circular reference with toJSON', function (assert) {
 
   // Therefore the following assertion should be `true`
   assert.deepEqual(parentObject.childObject.parentObject, parentObject)
-  assert.deepEqual(otherParentObject.otherChildObject.otherParentObject, otherParentObject)
+  assert.deepEqual(
+    otherParentObject.otherChildObject.otherParentObject,
+    otherParentObject
+  )
 
   assert.end()
 })
@@ -278,7 +291,9 @@ test('non-configurable circular getters use a replacer instead of markers', func
   const fixture = { name: 'Tywin Lannister' }
   Object.defineProperty(fixture, 'circle', {
     configurable: false,
-    get: function () { return fixture },
+    get: function () {
+      return fixture
+    },
     enumerable: true
   })
 
@@ -293,19 +308,85 @@ test('getter child circular reference', function (assert) {
     name: 'Tywin Lannister',
     child: {
       name: 'Tyrion Lannister',
-      get dinklage () { return fixture.child }
+      get dinklage () {
+        return fixture.child
+      }
     },
-    get self () { return fixture }
+    get self () {
+      return fixture
+    }
   }
 
   const expected = s({
     child: {
-      dinklage: '[Circular]', name: 'Tyrion Lannister'
+      dinklage: '[Circular]',
+      name: 'Tyrion Lannister'
     },
     name: 'Tywin Lannister',
     self: '[Circular]'
   })
   const actual = fss(fixture)
+  assert.is(actual, expected)
+  assert.end()
+})
+
+test('depthLimit option - will replace deep objects', function (assert) {
+  const fixture = {
+    name: 'Tywin Lannister',
+    child: {
+      name: 'Tyrion Lannister'
+    },
+    get self () {
+      return fixture
+    }
+  }
+
+  const expected = s({
+    child: '[...]',
+    name: 'Tywin Lannister',
+    self: '[Circular]'
+  })
+  const actual = fss(fixture, undefined, undefined, {
+    depthLimit: 1,
+    edgesLimit: 1
+  })
+  assert.is(actual, expected)
+  assert.end()
+})
+
+test('edgesLimit option - will replace deep objects', function (assert) {
+  const fixture = {
+    object: {
+      1: { test: 'test' },
+      2: { test: 'test' },
+      3: { test: 'test' },
+      4: { test: 'test' }
+    },
+    array: [
+      { test: 'test' },
+      { test: 'test' },
+      { test: 'test' },
+      { test: 'test' }
+    ],
+    get self () {
+      return fixture
+    }
+  }
+
+  const expected = s({
+    array: [{ test: 'test' }, { test: 'test' }, { test: 'test' }, '[...]'],
+    object: {
+      1: { test: 'test' },
+      2: { test: 'test' },
+      3: { test: 'test' },
+      4: '[...]'
+    },
+    self: '[Circular]'
+  })
+  const actual = fss(fixture, undefined, undefined, {
+    depthLimit: 3,
+    edgesLimit: 3
+  })
   assert.is(actual, expected)
   assert.end()
 })
