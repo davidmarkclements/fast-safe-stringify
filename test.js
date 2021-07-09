@@ -2,6 +2,7 @@ const test = require('tap').test
 const fss = require('./')
 const clone = require('clone')
 const s = JSON.stringify
+const stream = require('stream')
 
 test('circular reference to root', function (assert) {
   const fixture = { name: 'Tywin Lannister' }
@@ -301,4 +302,15 @@ test('getter child circular reference are replaced instead of marked', function 
   const actual = fss(fixture)
   assert.is(actual, expected)
   assert.end()
+})
+
+test('Proxy throwing', function (assert) {
+  assert.plan(1)
+  const s = new stream.PassThrough()
+  s.resume()
+  s.write('', () => {
+    assert.end()
+  })
+  const actual = fss({ s, p: new Proxy({}, { get() { throw new Error('kaboom') } }) })
+  assert.is(actual, '"[unable to serialize, circular reference is too complex to analyze]"')
 })
