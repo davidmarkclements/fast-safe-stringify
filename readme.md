@@ -35,9 +35,10 @@ function replacer(key, value) {
 }
 
 // those are also defaults limits when no options object is passed into safeStringify
+// configure it to lower the limit.
 const options = {
-  depthLimit: 10,
-  edgesLimit: 20,
+  depthLimit: Number.MAX_SAFE_INTEGER,
+  edgesLimit: Number.MAX_SAFE_INTEGER
 };
 
 const serialized = safeStringify(o, replacer, 2, options)
