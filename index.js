@@ -11,8 +11,8 @@ var replacerStack = []
 
 function defaultOptions () {
   return {
-    depthLimit: 10,
-    edgesLimit: 20
+    depthLimit: Number.MAX_SAFE_INTEGER,
+    edgesLimit: Number.MAX_SAFE_INTEGER
   }
 }
 
