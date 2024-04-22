@@ -6,6 +6,9 @@ declare function stringify(
 ): string;
 
 declare namespace stringify {
+  import _default = stringify;
+  export { _default as default };
+
   export function stable(
     value: any,
     replacer?: (key: string, value: any) => any,
@@ -20,4 +23,4 @@ declare namespace stringify {
   ): string;
 }
 
-export default stringify;
+export = stringify;
