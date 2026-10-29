@@ -3,7 +3,7 @@ declare function stringify(
   replacer?: (key: string, value: any) => any,
   space?: string | number,
   options?: { depthLimit: number | undefined; edgesLimit: number | undefined }
-): string;
+): string | undefined;
 
 declare namespace stringify {
   import _default = stringify;
@@ -14,13 +14,13 @@ declare namespace stringify {
     replacer?: (key: string, value: any) => any,
     space?: string | number,
     options?: { depthLimit: number | undefined; edgesLimit: number | undefined }
-  ): string;
+  ): string | undefined;
   export function stableStringify(
     value: any,
     replacer?: (key: string, value: any) => any,
     space?: string | number,
     options?: { depthLimit: number | undefined; edgesLimit: number | undefined }
-  ): string;
+  ): string | undefined;
 }
 
 export = stringify;
