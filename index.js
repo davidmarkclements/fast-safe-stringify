@@ -22,24 +22,35 @@ function stringify (obj, replacer, spacer, options) {
     options = defaultOptions()
   }
 
-  decirc(obj, '', 0, [], undefined, 0, options)
+  var previousArr = arr
+  var previousReplacerStack = replacerStack
+  arr = []
+  replacerStack = []
   var res
   try {
-    if (replacerStack.length === 0) {
-      res = JSON.stringify(obj, replacer, spacer)
-    } else {
-      res = JSON.stringify(obj, replaceGetterValues(replacer), spacer)
-    }
-  } catch (_) {
-    return JSON.stringify('[unable to serialize, circular reference is too complex to analyze]')
-  } finally {
-    while (arr.length !== 0) {
-      var part = arr.pop()
-      if (part.length === 4) {
-        Object.defineProperty(part[0], part[1], part[3])
+    decirc(obj, '', 0, [], undefined, 0, options)
+    try {
+      if (replacerStack.length === 0) {
+        res = JSON.stringify(obj, replacer, spacer)
       } else {
-        part[0][part[1]] = part[2]
+        res = JSON.stringify(obj, replaceGetterValues(replacer), spacer)
       }
+    } catch (_) {
+      return JSON.stringify('[unable to serialize, circular reference is too complex to analyze]')
+    }
+  } finally {
+    try {
+      while (arr.length !== 0) {
+        var part = arr.pop()
+        if (part.length === 4) {
+          Object.defineProperty(part[0], part[1], part[3])
+        } else {
+          part[0][part[1]] = part[2]
+        }
+      }
+    } finally {
+      arr = previousArr
+      replacerStack = previousReplacerStack
     }
   }
   return res
@@ -120,25 +131,36 @@ function deterministicStringify (obj, replacer, spacer, options) {
     options = defaultOptions()
   }
 
-  var tmp = deterministicDecirc(obj, '', 0, [], undefined, 0, options) || obj
+  var previousArr = arr
+  var previousReplacerStack = replacerStack
+  arr = []
+  replacerStack = []
   var res
   try {
-    if (replacerStack.length === 0) {
-      res = JSON.stringify(tmp, replacer, spacer)
-    } else {
-      res = JSON.stringify(tmp, replaceGetterValues(replacer), spacer)
-    }
-  } catch (_) {
-    return JSON.stringify('[unable to serialize, circular reference is too complex to analyze]')
-  } finally {
-    // Ensure that we restore the object as it was.
-    while (arr.length !== 0) {
-      var part = arr.pop()
-      if (part.length === 4) {
-        Object.defineProperty(part[0], part[1], part[3])
+    var tmp = deterministicDecirc(obj, '', 0, [], undefined, 0, options) || obj
+    try {
+      if (replacerStack.length === 0) {
+        res = JSON.stringify(tmp, replacer, spacer)
       } else {
-        part[0][part[1]] = part[2]
+        res = JSON.stringify(tmp, replaceGetterValues(replacer), spacer)
       }
+    } catch (_) {
+      return JSON.stringify('[unable to serialize, circular reference is too complex to analyze]')
+    }
+  } finally {
+    try {
+      // Ensure that we restore the object as it was.
+      while (arr.length !== 0) {
+        var part = arr.pop()
+        if (part.length === 4) {
+          Object.defineProperty(part[0], part[1], part[3])
+        } else {
+          part[0][part[1]] = part[2]
+        }
+      }
+    } finally {
+      arr = previousArr
+      replacerStack = previousReplacerStack
     }
   }
   return res

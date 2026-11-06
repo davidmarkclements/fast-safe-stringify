@@ -395,3 +395,104 @@ test('edgesLimit option - will replace deep objects', function (assert) {
   assert.equal(actual, expected)
   assert.end()
 })
+
+test('nested stringify calls keep restoration state separate', function (assert) {
+  const modes = [require('./'), require('./').stable]
+  modes.forEach(function (outer) {
+    modes.forEach(function (inner) {
+      const fixture = { name: 'outer' }
+      fixture.self = fixture
+      let called = false
+      const actual = outer(fixture, function (key, value) {
+        if (!called) {
+          called = true
+          assert.equal(inner({ name: 'inner' }), '{"name":"inner"}')
+          assert.equal(fixture.self, '[Circular]')
+        }
+        return value
+      })
+      assert.equal(actual, '{"name":"outer","self":"[Circular]"}')
+      assert.equal(fixture.self, fixture)
+    })
+  })
+  assert.end()
+})
+
+test('nested stringify from toJSON keeps the outer cycle replaced', function (assert) {
+  const modes = [require('./'), require('./').stable]
+  modes.forEach(function (outer) {
+    modes.forEach(function (inner) {
+      const fixture = {}
+      fixture.child = {
+        toJSON: function () {
+          assert.equal(inner({ value: 1 }), '{"value":1}')
+          assert.equal(fixture.self, '[Circular]')
+          return 'child'
+        }
+      }
+      fixture.self = fixture
+      assert.equal(outer(fixture), '{"child":"child","self":"[Circular]"}')
+      assert.equal(fixture.self, fixture)
+    })
+  })
+  assert.end()
+})
+
+test('traversal errors restore changes and nested calls keep their caller state', function (assert) {
+  const modes = [require('./'), require('./').stable]
+  modes.forEach(function (outer) {
+    modes.forEach(function (inner) {
+      const fixture = {}
+      fixture.self = fixture
+      const broken = {}
+      broken.self = broken
+      const error = new Error('getter failed')
+      Object.defineProperty(broken, 'throwing', {
+        enumerable: true,
+        get: function () { throw error }
+      })
+      let called = false
+      const actual = outer(fixture, function (key, value) {
+        if (!called) {
+          called = true
+          assert.throws(function () { inner(broken) }, error)
+          assert.equal(broken.self, broken)
+          assert.equal(fixture.self, '[Circular]')
+        }
+        return value
+      })
+      assert.equal(actual, '{"self":"[Circular]"}')
+      assert.equal(fixture.self, fixture)
+    })
+  })
+  assert.end()
+})
+
+test('nested stringify preserves non-configurable circular getters', function (assert) {
+  const modes = [require('./'), require('./').stable]
+  modes.forEach(function (outer) {
+    modes.forEach(function (inner) {
+      const fixture = {}
+      Object.defineProperty(fixture, 'self', {
+        enumerable: true,
+        get: function () { return fixture }
+      })
+      let called = false
+      const actual = outer(fixture, function (key, value) {
+        if (!called) {
+          called = true
+          const nested = {}
+          Object.defineProperty(nested, 'self', {
+            enumerable: true,
+            get: function () { return nested }
+          })
+          assert.equal(inner(nested), '{"self":"[Circular]"}')
+        }
+        return value
+      })
+      assert.equal(actual, '{"self":"[Circular]"}')
+      assert.equal(fixture.self, fixture)
+    })
+  })
+  assert.end()
+})
